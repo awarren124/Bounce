@@ -3,8 +3,8 @@ using System.Collections;
 
 public class GameManager : MonoBehaviour {
 
-    public Rigidbody2D ball;
-    public Rigidbody2D specialBall;
+    public Ball ball;
+    public SpecialBall specialBall;
     public GameObject wall;
     public GameObject ballFallTriggerPrefab;
     public Vector2 ballDropPoint;
@@ -17,6 +17,7 @@ public class GameManager : MonoBehaviour {
     static float ballTimerTrigger = 1.0f;
     static int numOfBallsTrigger = 3;
     public static bool spawnSpecial = true;
+    double specialFreq = 0.99f;
 
     // Use this for initialization
     void Start() {
@@ -48,9 +49,8 @@ public class GameManager : MonoBehaviour {
         ballTImer += Time.fixedDeltaTime;
         levelTimer += Time.fixedDeltaTime;
 
-        if(Random.Range(0.0F, 1.0F) > 0.999F && spawnSpecial){
-        //if(level == 1 && spawnSpecial){
-            SpecialBall specialball = Instantiate(specialBall, ballDropPoint, Quaternion.identity) as SpecialBall;
+        if(Random.Range(0.0F, 1.0F) > specialFreq && spawnSpecial){
+            SpecialBall specialball = Instantiate(specialBall, ballDropPoint, Quaternion.identity);
             spawnSpecial = false;
         }
 
@@ -66,13 +66,12 @@ public class GameManager : MonoBehaviour {
         if(ballTImer > ballTimerTrigger && numOfBalls < numOfBallsTrigger) { //Every second if there are less than 3 balls
 
             //Make new ball
-            Ball instantiatedBall = Instantiate(ball, ballDropPoint, Quaternion.identity) as Ball;
+            Ball instantiatedBall = Instantiate(ball, ballDropPoint, Quaternion.identity);
 
             ballTImer = 0;
 
             numOfBalls++;
         }
-        print(Random.Range(0, 4));
 
     }
 

@@ -3,8 +3,9 @@ using System.Collections;
 
 public class Platform : MonoBehaviour {
 
-    public static bool isReversed = false;
     public static bool expand = false;
+    public static bool shrink = false;
+    public static bool isReversed = false;
     Rigidbody2D rb;
 
     // Use this for initialization
@@ -18,7 +19,7 @@ public class Platform : MonoBehaviour {
         //if(Input.touchCount > 0) {
             Vector2 touchPos = Input.mousePosition;//Input.GetTouch(0).position;
             if(isReversed){
-                touchPos.x = Screen.width - Input.GetTouch(0).position.x;
+            touchPos.x = Screen.width - Input.mousePosition.x;//Input.GetTouch(0).position.x;
                 print("reversing x val");
              }
             Vector3 worldPoint = Camera.main.ScreenToWorldPoint(touchPos);
@@ -29,13 +30,30 @@ public class Platform : MonoBehaviour {
             rb.MovePosition(new Vector2(transform.position.x - (transform.position.x - worldPoint.x) / 4, transform.position.y));
         //}
 
-        if(expand && transform.localScale.x < 2.5F){
+/*        if(expand && transform.localScale.x < 2.5F){
 //            transform.localScale.Scale();
-            transform.localScale.Scale(transform.localScale + new Vector3(0.5F, 0, 0) * Time.deltaTime);
+            //transform.localScale.Scale(transform.localScale + new Vector3(0.5F, 0, 0) * Time.deltaTime);
+            transform.localScale += new Vector3(0.5F , 0, 0) * Time.deltaTime;
         }
 
         if(!expand && transform.localScale.x > 1.85F){
             transform.localScale -= new Vector3(0.5F , 0, 0) * Time.deltaTime;
+        }*/
+
+        if(expand){
+            expandPlatform();
+            expand = false;
         }
+        if(shrink){
+            shrinkPlatform();
+            shrink = false;
+        }
+    }
+
+    public void expandPlatform(){
+        GetComponent<Animation>().Play("PlatformGrow");
+    }
+    public void shrinkPlatform(){
+        GetComponent<Animation>().Play("PlatformShrink");
     }
 }
