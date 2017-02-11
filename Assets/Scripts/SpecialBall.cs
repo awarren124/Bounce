@@ -8,7 +8,7 @@ public class SpecialBall : MonoBehaviour {
     float timer = 0.0F;
     Color color;
 
-    enum BallType {Reverse, BallShrink, PlatformExpand, Strobe};
+    enum BallType {Reverse, BallShrink, PlatformExpand, Strobe, Slow};
 //    enum BallType {Reverse = Color.red, BallShrink = Color.blue, PlatformExpand = Color.yellow, Strobe = Color.gray};
     //BallType type;
     BallType type = (BallType)Random.Range(0, System.Enum.GetNames(typeof(BallType)).Length);
@@ -19,7 +19,7 @@ public class SpecialBall : MonoBehaviour {
 	void Start () {
         cam = Camera.main;
         print(type);
-
+        type = BallType.Slow;
         switch(type) {
             case BallType.Reverse:
                 GetComponent<SpriteRenderer>().color = Color.red;
@@ -33,9 +33,12 @@ public class SpecialBall : MonoBehaviour {
             case BallType.Strobe:
                 GetComponent<SpriteRenderer>().color = Color.gray;
                 break;
+            case BallType.Slow:
+                GetComponent<SpriteRenderer>().color = Color.cyan;
+                break;
         }
 
-        GetComponent<Rigidbody2D>().AddForce(new Vector2(Random.Range(-200, 200), 0));
+        //GetComponent<Rigidbody2D>().AddForce(new Vector2(Random.Range(-200, 200), 0));
     }
 	
 	// Update is called once per frame
@@ -90,6 +93,9 @@ public class SpecialBall : MonoBehaviour {
             case BallType.PlatformExpand:
                 Platform.expand = true;
                 break;
+            case BallType.Slow:
+                Time.timeScale = 0.5F;
+                break;
         }
 
         cam.backgroundColor = color;
@@ -111,6 +117,9 @@ public class SpecialBall : MonoBehaviour {
                 break;
             case BallType.PlatformExpand:
                 Platform.shrink = true;
+                break;
+            case BallType.Slow:
+                Time.timeScale = 1.0F;
                 break;
         }
         GameManager.spawnSpecial = true;

@@ -16,10 +16,10 @@ public class Platform : MonoBehaviour {
     // Update is called once per frame
     void Update() {
         
-        //if(Input.touchCount > 0) {
-            Vector2 touchPos = Input.mousePosition;//Input.GetTouch(0).position;
+        if(Input.touchCount > 0) {
+            Vector2 touchPos = Input.GetTouch(0).position;
             if(isReversed){
-            touchPos.x = Screen.width - Input.mousePosition.x;//Input.GetTouch(0).position.x;
+            touchPos.x = Screen.width - Input.GetTouch(0).position.x;
                 print("reversing x val");
              }
             Vector3 worldPoint = Camera.main.ScreenToWorldPoint(touchPos);
@@ -28,7 +28,7 @@ public class Platform : MonoBehaviour {
             worldPoint.y = transform.position.y;
             rb.MovePosition(new Vector3(worldPoint.x / 2, worldPoint.y, worldPoint.z));
             rb.MovePosition(new Vector2(transform.position.x - (transform.position.x - worldPoint.x) / 4, transform.position.y));
-        //}
+        }
 
 /*        if(expand && transform.localScale.x < 2.5F){
 //            transform.localScale.Scale();
