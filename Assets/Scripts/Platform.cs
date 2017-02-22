@@ -26,19 +26,9 @@ public class Platform : MonoBehaviour {
 
             worldPoint.z = transform.position.z;
             worldPoint.y = transform.position.y;
-            rb.MovePosition(new Vector3(worldPoint.x / 2, worldPoint.y, worldPoint.z));
-            rb.MovePosition(new Vector2(transform.position.x - (transform.position.x - worldPoint.x) / 4, transform.position.y));
+            //rb.MovePosition(new Vector3(worldPoint.x / 2, worldPoint.y, worldPoint.z));
+            rb.MovePosition(new Vector2(transform.position.x - (transform.position.x - worldPoint.x) / 2, transform.position.y));
         }
-
-/*        if(expand && transform.localScale.x < 2.5F){
-//            transform.localScale.Scale();
-            //transform.localScale.Scale(transform.localScale + new Vector3(0.5F, 0, 0) * Time.deltaTime);
-            transform.localScale += new Vector3(0.5F , 0, 0) * Time.deltaTime;
-        }
-
-        if(!expand && transform.localScale.x > 1.85F){
-            transform.localScale -= new Vector3(0.5F , 0, 0) * Time.deltaTime;
-        }*/
 
         if(expand){
             expandPlatform();

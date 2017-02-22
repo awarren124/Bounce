@@ -7,18 +7,20 @@ public class Ball : MonoBehaviour {
     float t = 0.0f;
     int bounceCount = 0;
     public static bool shrinkBalls = false;
+    public static bool expandBalls = false;
+    int bounceThresh = 1;
 
 	// Use this for initialization
 	void Start () {
         //When instantiated, make add random force left or right
         GetComponent<Rigidbody2D>().AddForce(new Vector2(Random.Range(-200, 200), 0));
 	}
-	
-	// Update is called once per frame
-	void Update () {
+
+    // Update is called once per frame
+    void Update() {
 
         //If the ball has hit the platform
-        if(startDissapearing){
+        if (startDissapearing) {
 
             //Lerp the alpha to zero.
             Color color = GetComponent<SpriteRenderer>().material.color;
@@ -27,21 +29,31 @@ public class Ball : MonoBehaviour {
             t += 0.5f * Time.deltaTime;
 
             //When the ball is no longer visible, destory it
-            if(color.a <= 0){
+            if (color.a <= 0) {
                 Destroy(gameObject);
                 GameManager.numOfBalls--;
             }
         }
 
-        if(shrinkBalls && transform.localScale.x > 0.5F){
-            transform.localScale -= new Vector3(0.5F, 0.5F, 1) * Time.deltaTime;
+        if (shrinkBalls){
+            shrinkBall();
+            shrinkBalls = false;
         }
-
-        if(!shrinkBalls && transform.localScale.x < 1){
-            transform.localScale += new Vector3(0.5F, 0.5F, 1) * Time.deltaTime;
+        if (expandBalls){
+            expandBall();
+            expandBalls = false;
         }
 
 	}
+
+    void shrinkBall() {
+        GetComponent<Animation>().Play("BallShrink");
+    }
+
+    void expandBall()
+    {
+        GetComponent<Animation>().Play("BallGrow");
+    }
 
     void OnTriggerEnter2D(Collider2D col) {
 
@@ -57,7 +69,7 @@ public class Ball : MonoBehaviour {
             //startDissapearing = true;
             bounceCount++;
             GameManager.bouncedBall();
-            if(bounceCount == 3){
+            if(bounceCount == bounceThresh){
                 startDissapearing = true;
             }
         }

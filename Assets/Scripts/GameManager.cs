@@ -17,7 +17,7 @@ public class GameManager : MonoBehaviour {
     static float ballTimerTrigger = 1.0f;
     static int numOfBallsTrigger = 3;
     public static bool spawnSpecial = true;
-    double specialFreq = 0.99f;
+    double specialFreq = 0.995f;
 
     // Use this for initialization
     void Start() {
@@ -57,16 +57,16 @@ public class GameManager : MonoBehaviour {
             spawnSpecial = false;
         }
 
-        if(levelTimer > 6){
+        if(levelTimer > 4){
             level++;
-            if(ballTimerTrigger > 0.5) {
-                //ballTimerTrigger -= 0.2f;
+            if(ballTimerTrigger > 0.3) {
+                ballTimerTrigger -= 0.1f;
                 //numOfBallsTrigger += 1;
             }
             levelTimer = 0;
         }
 
-        if(ballTImer > ballTimerTrigger && numOfBalls < numOfBallsTrigger) { //Every second if there are less than 3 balls
+        if(ballTImer > ballTimerTrigger ) {//&& numOfBalls < numOfBallsTrigger) { //Every second if there are less than 3 balls
 
             //Make new ball
             Ball instantiatedBall = Instantiate(ball, ballDropPoint, Quaternion.identity);
