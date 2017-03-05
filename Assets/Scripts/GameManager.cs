@@ -12,7 +12,7 @@ public class GameManager : MonoBehaviour {
     public GameObject wall;
     public GameObject ballFallTriggerPrefab;
     public Vector2 ballDropPoint;
-    float ballTImer = 0.0f;
+    static float ballTimer = 0.0f;
     float levelTimer = 0.0f;
     public static int numOfBalls = 0;
     public static int score = 0;
@@ -21,9 +21,10 @@ public class GameManager : MonoBehaviour {
     static float ballTimerTrigger = 1.0f;
     static int numOfBallsTrigger = 3;
     public static bool spawnSpecial = true;
-    double specialFreq = 0.99999f;
+    double specialFreq = 0.995f;
     static bool shrinkBall = false;
     public static UIManager ui;
+    static bool gameOver = false;
 //    public b
     // Use this for initialization
     void Start() {
@@ -55,37 +56,46 @@ public class GameManager : MonoBehaviour {
 	
     // Update is called once per frame
     void FixedUpdate() {
-        ballTImer += Time.fixedDeltaTime;
-        levelTimer += Time.fixedDeltaTime;
+        if (!gameOver)
+        {
+            ballTimer += Time.fixedDeltaTime;
+            levelTimer += Time.fixedDeltaTime;
 
-        if(Random.Range(0.0F, 1.0F) > specialFreq && spawnSpecial){
-            SpecialBall specialball = Instantiate(specialBall, ballDropPoint, Quaternion.identity);
-            spawnSpecial = false;
-        }
-
-        if(levelTimer > 4){
-            level++;
-            if(ballTimerTrigger > 0.3) {
-                ballTimerTrigger -= 0.1f;
-                //numOfBallsTrigger += 1;
+            if (Random.Range(0.0F, 1.0F) > specialFreq && spawnSpecial)
+            {
+                SpecialBall specialball = Instantiate(specialBall, ballDropPoint, Quaternion.identity);
+                spawnSpecial = false;
             }
-            levelTimer = 0;
-        }
 
-        if(ballTImer > ballTimerTrigger ) {//&& numOfBalls < numOfBallsTrigger) { //Every second if there are less than 3 balls
-
-            //Make new ball
-            Ball instantiatedBall = Instantiate(ball, ballDropPoint, Quaternion.identity);
-            if(shrinkBall){
-                instantiatedBall.GetComponent<Animation>().Play("BallShrink");
+            if (levelTimer > 4)
+            {
+                level++;
+                if (ballTimerTrigger > 0.3)
+                {
+                    ballTimerTrigger -= 0.1f;
+                    //numOfBallsTrigger += 1;
+                }
+                levelTimer = 0;
             }
-            ballTImer = 0;
 
-            numOfBalls++;
-        }
+            if (ballTimer > ballTimerTrigger)
+            {//&& numOfBalls < numOfBallsTrigger) { //Every second if there are less than 3 balls
 
-        if(lives < 3){
-            gameOver();
+                //Make new ball
+                Ball instantiatedBall = Instantiate(ball, ballDropPoint, Quaternion.identity);
+                if (shrinkBall)
+                {
+                    instantiatedBall.GetComponent<Animation>().Play("BallShrink");
+                }
+                ballTimer = 0;
+
+                numOfBalls++;
+            }
+
+            if (lives < 0)
+            {
+                startGameOver();
+            }
         }
 
     }
@@ -117,7 +127,8 @@ public class GameManager : MonoBehaviour {
         ui.updateScore(score);
     }
 
-    public void gameOver(){
+    public void startGameOver(){
+        gameOver = true;
 //        Time.timeScale = 0.0F;
         GameObject[] balls = GameObject.FindGameObjectsWithTag("Ball");
         for(int i = 0; i < balls.Length; i++) {
@@ -130,6 +141,8 @@ public class GameManager : MonoBehaviour {
 
     public static void restart(){
         ui.restart();
+        ballTimerTrigger = 1.0F;
+        ballTimer = 0.0F;
         GameObject[] balls = GameObject.FindGameObjectsWithTag("Ball");
         for(int i = 0; i < balls.Length; i++){
             Destroy(balls[i]);
@@ -139,5 +152,6 @@ public class GameManager : MonoBehaviour {
         ui.updateScore(score);
         ui.updateLives(lives);
         Time.timeScale = 1.0F;
+        gameOver = false;
     }
 }

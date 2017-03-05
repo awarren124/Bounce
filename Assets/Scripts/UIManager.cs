@@ -14,12 +14,7 @@ public class UIManager{// : MonoBehaviour {
         scoreLabel = sL;
         livesLabel = lL;
         panel = p;
-        panelRenderer = panel.GetComponent<CanvasRenderer>();
-        panelChildren = panel.GetComponentsInChildren<CanvasRenderer>();
-        /*panelRenderer.SetAlpha(0.0F);
-        for(int i = 0; i < panelChildren.Length; i++){
-            panelChildren[i].SetAlpha(0.0F);
-        }*/
+
     }
 
     public void updateLives(int lives) {
@@ -30,19 +25,19 @@ public class UIManager{// : MonoBehaviour {
         scoreLabel.text = "Score: " + score;
     }
 
-    public void showGameOverPanel(){ 
-        /*panelRenderer.SetAlpha(1.0F);
-        for(int i = 0; i < panelChildren.Length; i++){
-            panelChildren[i].SetAlpha(1.0F);
-        }*/
+    public void showGameOverPanel(){
+
+        panel.GetComponentInChildren<Button>().interactable = true;
+        panel.GetComponent<Animation>()["UIIn"].speed = 1;
+        panel.GetComponent<Animation>()["UIIn"].time = 0.0F;
         panel.GetComponent<Animation>().Play("UIIn");
     }
 
     public void restart(){
+        panel.GetComponent<Animation>()["UIIn"].speed = -1;
+        panel.GetComponent<Animation>()["UIIn"].time = panel.GetComponent<Animation>()["UIIn"].length;
+        panel.GetComponent<Animation>().Play("UIIn");
         panel.GetComponentInChildren<Button>().interactable = false;
-        panelRenderer.SetAlpha(0.0F);
-        for(int i = 0; i < panelChildren.Length; i++){
-            panelChildren[i].SetAlpha(0.0F);
-        }
+        
     }
 }
