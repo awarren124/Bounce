@@ -18,7 +18,7 @@ public class SpecialBall : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-        type = BallType.BallShrink;
+      //  type = BallType.Strobe;
         cam = Camera.main;
         print(type);
         //type = BallType.Slow;
@@ -40,7 +40,7 @@ public class SpecialBall : MonoBehaviour {
                 break;
         }
 
-        //GetComponent<Rigidbody2D>().AddForce(new Vector2(Random.Range(-200, 200), 0));
+        GetComponent<Rigidbody2D>().AddForce(new Vector2(Random.Range(-200, 200), 0));
     }
 	
 	// Update is called once per frame
@@ -48,10 +48,11 @@ public class SpecialBall : MonoBehaviour {
         //print("Kinematic: " + isKinematic);
         if(active){
             //print(timer);
+            //print(GetComponent<SpriteRenderer>().material.color.a);
             timer += Time.deltaTime;
             if(type == BallType.Strobe) {
-                float lerp = Mathf.PingPong(Time.time, 1.0F) / 1.0F;
-                float alpha = Mathf.Lerp(0.0F, 1.0F, lerp);
+                float lerp = Mathf.PingPong(Time.time, 1.0F);
+                float alpha = Mathf.Lerp(1.0F, 0.0F, lerp);
                 Color color = GetComponent<SpriteRenderer>().material.color;
                 color.a = alpha;
                 GetComponent<SpriteRenderer>().material.color = color;
@@ -77,11 +78,14 @@ public class SpecialBall : MonoBehaviour {
             GetComponent<SpriteRenderer>().sortingOrder = -100;
         }else{
             GetComponent<SpriteRenderer>().sortingOrder = 100;
+            //GetComponent<Animation>().Play("StrobeSpecialBallGrow");
         }
+        GetComponent<Animation>().Play("SpecialBallGrow");
+
         GetComponent<CircleCollider2D>().enabled = false;
         GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Kinematic;
         GetComponent<Rigidbody2D>().velocity = Vector2.zero;
-        GetComponent<Animation>().Play("SpecialBallGrow");
+        //GetComponent<SpriteRenderer>().sortingOrder = 100;
     }
 
     void growOver (){
@@ -90,7 +94,7 @@ public class SpecialBall : MonoBehaviour {
                 Platform.isReversed = true;
                 break;
             case BallType.BallShrink:
-                Ball.shrinkBalls = true;
+                GameManager.shrinkBalls();
                 break;
             case BallType.PlatformExpand:
                 Platform.expand = true;
@@ -99,8 +103,6 @@ public class SpecialBall : MonoBehaviour {
                 Time.timeScale = 0.5F;
                 break;
         }
-
-        cam.backgroundColor = color;
         active = true;
     }
 
@@ -115,7 +117,7 @@ public class SpecialBall : MonoBehaviour {
                 Platform.isReversed = false;
                 break;
             case BallType.BallShrink:
-                Ball.expandBalls = true;
+                GameManager.expandBalls();
                 break;
             case BallType.PlatformExpand:
                 Platform.shrink = true;

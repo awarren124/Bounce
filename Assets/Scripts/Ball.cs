@@ -35,29 +35,13 @@ public class Ball : MonoBehaviour {
             }
         }
 
-        if (shrinkBalls){
-            shrinkBall();
-            shrinkBalls = false;
-        }
-        if (expandBalls){
-            expandBall();
-            expandBalls = false;
-        }
-
 	}
 
-    void shrinkBall() {
-        GetComponent<Animation>().Play("BallShrink");
-    }
 
-    void expandBall()
-    {
-        GetComponent<Animation>().Play("BallGrow");
-    }
 
     void OnTriggerEnter2D(Collider2D col) {
 
-        //If the ball goes past the 
+        //If the ball goes past the trigger
         if(col.tag == "FallTrigger"){
             GameManager.lostBall();
             Destroy(gameObject);

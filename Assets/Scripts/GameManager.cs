@@ -1,8 +1,12 @@
 ﻿using UnityEngine;
+using UnityEngine.UI;
 using System.Collections;
 
 public class GameManager : MonoBehaviour {
 
+    public Text scoreLabel;
+    public Text livesLabel;
+    public GameObject panel;
     public Ball ball;
     public SpecialBall specialBall;
     public GameObject wall;
@@ -17,11 +21,13 @@ public class GameManager : MonoBehaviour {
     static float ballTimerTrigger = 1.0f;
     static int numOfBallsTrigger = 3;
     public static bool spawnSpecial = true;
-    double specialFreq = 0.995f;
-
+    double specialFreq = 0.99999f;
+    static bool shrinkBall = false;
+    public static UIManager ui;
+//    public b
     // Use this for initialization
     void Start() {
-
+        ui = new UIManager(scoreLabel, livesLabel, panel);
         Application.targetFrameRate = 60;
 
         //Level setup
@@ -70,29 +76,68 @@ public class GameManager : MonoBehaviour {
 
             //Make new ball
             Ball instantiatedBall = Instantiate(ball, ballDropPoint, Quaternion.identity);
-
+            if(shrinkBall){
+                instantiatedBall.GetComponent<Animation>().Play("BallShrink");
+            }
             ballTImer = 0;
 
             numOfBalls++;
         }
 
+        if(lives < 3){
+            gameOver();
+        }
+
+    }
+
+    public static void shrinkBalls(){
+        GameObject[] balls = GameObject.FindGameObjectsWithTag("Ball");
+        for(int i = 0; i < balls.Length; i++) {
+            balls[i].GetComponent<Animation>().Play("BallShrink");
+        }
+        shrinkBall = true; 
+    }
+
+    public static void expandBalls(){
+        GameObject[] balls = GameObject.FindGameObjectsWithTag("Ball");
+        for(int i = 0; i < balls.Length; i++) {
+            balls[i].GetComponent<Animation>().Play("BallGrow");
+        }
+        shrinkBall = false; 
     }
 
     public static void lostBall(){
         numOfBalls--;
         lives -= 1;
+        ui.updateLives(lives);
     }
 
     public static void bouncedBall(){
         score += 1;
-        if(score == 6){
-        }
+        ui.updateScore(score);
     }
 
     public void gameOver(){
-        score = 0;
-        level = 1;
+//        Time.timeScale = 0.0F;
+        GameObject[] balls = GameObject.FindGameObjectsWithTag("Ball");
+        for(int i = 0; i < balls.Length; i++) {
+            balls[i].GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Kinematic;
+            balls[i].GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+        }
 
+        ui.showGameOverPanel();
     }
 
+    public static void restart(){
+        ui.restart();
+        GameObject[] balls = GameObject.FindGameObjectsWithTag("Ball");
+        for(int i = 0; i < balls.Length; i++){
+            Destroy(balls[i]);
+        }
+        score = 0;
+        lives = 3;
+        ui.updateScore(score);
+        ui.updateLives(lives);
+        Time.timeScale = 1.0F;
+    }
 }
