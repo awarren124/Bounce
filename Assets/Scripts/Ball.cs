@@ -9,6 +9,7 @@ public class Ball : MonoBehaviour {
     public static bool shrinkBalls = false;
     public static bool expandBalls = false;
     int bounceThresh = 1;
+    public bool stopStrobing = false;
 
 	// Use this for initialization
 	void Start () {
@@ -21,7 +22,7 @@ public class Ball : MonoBehaviour {
 
         //If the ball has hit the platform
         if (startDissapearing) {
-
+            stopStrobing = true;
             //Lerp the alpha to zero.
             Color color = GetComponent<SpriteRenderer>().material.color;
             color.a -= Mathf.Lerp(0.0f, 1.0f, t);
@@ -53,9 +54,16 @@ public class Ball : MonoBehaviour {
             //startDissapearing = true;
             bounceCount++;
             GameManager.bouncedBall();
-            if(bounceCount == bounceThresh){
-                startDissapearing = true;
-            }
+            if(GameManager.gamemode != GameManager.GameMode.KeepUp)
+                if(bounceCount == bounceThresh)
+                    startDissapearing = true;
         }
     }
+
+    public void gameOver()
+    {
+        GetComponent<Animation>().Play("GameOver");
+        Destroy(gameObject, GetComponent<Animation>().GetClip("GameOver").length);
+    }
+
 }

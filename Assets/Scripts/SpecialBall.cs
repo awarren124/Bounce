@@ -4,7 +4,7 @@ using System.Collections;
 public class SpecialBall : MonoBehaviour {
 
     Camera cam;
-    bool active = false;
+    public bool active = false;
     float timer = 0.0F;
     Color color;
 
@@ -58,7 +58,7 @@ public class SpecialBall : MonoBehaviour {
                 GetComponent<SpriteRenderer>().material.color = color;
             }
             if(timer > 10){
-                active = false;
+                
                 shrink();
             }
         }
@@ -66,7 +66,6 @@ public class SpecialBall : MonoBehaviour {
 
     void OnCollisionEnter2D(Collision2D colinfo){
         if(colinfo.collider.tag == "Platform"){
-            print("collision");
             grow();
             //GetComponent<Rigidbody2D>().isKinematic = true;
             //GetComponent<Animation>().Play();
@@ -106,7 +105,8 @@ public class SpecialBall : MonoBehaviour {
         active = true;
     }
 
-    void shrink(){
+    public void shrink(){
+        active = false;
         cam.backgroundColor = Color.black;
         GetComponent<Animation>().Play("SpecialBallShrink");
     }
@@ -136,5 +136,30 @@ public class SpecialBall : MonoBehaviour {
             Destroy(gameObject);
         }
     }
+
+    private void OnDestroy()
+    {
+        switch (type)
+        {
+            case BallType.Reverse:
+                Platform.isReversed = false;
+                break;
+            case BallType.BallShrink:
+                GameManager.expandBalls();
+                break;
+            case BallType.PlatformExpand:
+                if (Platform.platformIsExpanded)
+                {
+                    Platform.shrink = true;
+                }
+                break;
+            case BallType.Slow:
+                Time.timeScale = 1.0F;
+                break;
+        }
+        GameManager.spawnSpecial = true;
+    }
+
+
 
 }
