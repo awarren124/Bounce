@@ -28,10 +28,11 @@ public class GameManager : MonoBehaviour {
     static bool readyToSpawn = true;
     public enum GameMode {Lives, KeepUp, Blind};
     public static GameMode gamemode = GameMode.Blind;
+    public GameObject lostBallX;
     //    public b
     // Use this for initialization
     void Start() {
-        ui = new UIManager(scoreLabel, livesLabel, panel);
+        ui = new UIManager(scoreLabel, livesLabel, panel, lostBallX);
         Application.targetFrameRate = 60;
 
         //Level setup
@@ -169,9 +170,11 @@ public class GameManager : MonoBehaviour {
         shrinkBall = false;
     }
 
-    public static void lostBall() {
+    public static void lostBall(Vector3 pos) {
         numOfBalls--;
         lives -= 1;
+        print(pos);
+        ui.showLostBallX(pos);
         ui.updateLives(lives);
     }
 

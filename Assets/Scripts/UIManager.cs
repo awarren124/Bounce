@@ -8,12 +8,14 @@ public class UIManager{// : MonoBehaviour {
     GameObject panel;
     CanvasRenderer[] panelChildren;
     CanvasRenderer panelRenderer;
+    GameObject lostBallX;
 	// Use this for initialization
 
-    public UIManager(Text sL, Text lL, GameObject p){
+    public UIManager(Text sL, Text lL, GameObject p, GameObject i){
         scoreLabel = sL;
         livesLabel = lL;
         panel = p;
+        lostBallX = i;
 
     }
 
@@ -39,5 +41,14 @@ public class UIManager{// : MonoBehaviour {
         panel.GetComponent<Animation>().Play("UIIn");
         panel.GetComponentInChildren<Button>().interactable = false;
         
+    }
+
+    public void showLostBallX(Vector2 pos)
+    {
+        Debug.Log(pos);
+        pos.y += 2;
+        Debug.Log(pos);
+        GameObject xImg = GameObject.Instantiate(lostBallX, pos, Quaternion.identity);
+
     }
 }

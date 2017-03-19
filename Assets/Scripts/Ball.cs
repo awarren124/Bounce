@@ -44,7 +44,7 @@ public class Ball : MonoBehaviour {
 
         //If the ball goes past the trigger
         if(col.tag == "FallTrigger"){
-            GameManager.lostBall();
+            GameManager.lostBall(gameObject.transform.position);
             Destroy(gameObject);
         }
     }
