@@ -27,7 +27,7 @@ public class GameManager : MonoBehaviour {
     static bool gameOver = false;
     static bool readyToSpawn = true;
     public enum GameMode {Lives, KeepUp, Blind};
-    public static GameMode gamemode = GameMode.Lives;
+    public static GameMode gamemode = GameMode.Blind;
     //    public b
     // Use this for initialization
     void Start() {
