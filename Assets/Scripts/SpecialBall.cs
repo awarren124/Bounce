@@ -9,19 +9,17 @@ public class SpecialBall : MonoBehaviour {
     Color color;
 
     enum BallType {Reverse, BallShrink, PlatformExpand, Strobe, Slow};
-//    enum BallType {Reverse = Color.red, BallShrink = Color.blue, PlatformExpand = Color.yellow, Strobe = Color.gray};
+    //    enum BallType {Reverse = Color.red, BallShrink = Color.blue, PlatformExpand = Color.yellow, Strobe = Color.gray};
     //BallType type;
-    BallType type = (BallType)Random.Range(0, System.Enum.GetNames(typeof(BallType)).Length);
+    BallType type;
     //string[] types = { "reverse", "shrink balls", "expand platform" , "strobe"};
     //Color[] colors = { Color.red, Color.blue, Color.yellow, Color.gray };
-    
 
-	// Use this for initialization
-	void Start () {
-      //  type = BallType.Strobe;
+
+    // Use this for initialization
+    void Start () {
+        type = (BallType)Random.Range(0, System.Enum.GetNames(typeof(BallType)).Length);
         cam = Camera.main;
-        print(type);
-        //type = BallType.Slow;
         switch(type) {
             case BallType.Reverse:
                 GetComponent<SpriteRenderer>().color = Color.red;

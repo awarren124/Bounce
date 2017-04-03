@@ -15,6 +15,21 @@ public class ButtonManager : MonoBehaviour {
 	}
 
     public void retry(){
-        GameManager.restart();
+        GameManager.restart(false);
+    }
+
+    public void classic()
+    {
+        GameManager.startGame(GameManager.GameMode.Lives);
+    }
+
+    public void blind()
+    {
+        GameManager.startGame(GameManager.GameMode.Blind);
+    }
+
+    public void menu()
+    {
+        GameManager.goToMenu();
     }
 }

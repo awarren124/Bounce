@@ -9,14 +9,15 @@ public class UIManager{// : MonoBehaviour {
     CanvasRenderer[] panelChildren;
     CanvasRenderer panelRenderer;
     GameObject lostBallX;
+    GameObject titlePanel;
 	// Use this for initialization
 
-    public UIManager(Text sL, Text lL, GameObject p, GameObject i){
+    public UIManager(Text sL, Text lL, GameObject p, GameObject i, GameObject tp){
         scoreLabel = sL;
         livesLabel = lL;
         panel = p;
         lostBallX = i;
-
+        titlePanel = tp;
     }
 
     public void updateLives(int lives) {
@@ -49,6 +50,21 @@ public class UIManager{// : MonoBehaviour {
         pos.y += 2;
         Debug.Log(pos);
         GameObject xImg = GameObject.Instantiate(lostBallX, pos, Quaternion.identity);
+
+    }
+
+    public void fadeOutTitle()
+    {
+        titlePanel.GetComponent<Animation>()["TitleOut"].speed = 1;
+        titlePanel.GetComponent<Animation>()["TitleOut"].time = 0;
+        titlePanel.GetComponent<Animation>().Play("TitleOut");
+    }
+
+    public void menuIn()
+    {
+        titlePanel.GetComponent<Animation>()["TitleOut"].speed = -1;
+        titlePanel.GetComponent<Animation>()["TitleOut"].time = titlePanel.GetComponent<Animation>()["TitleOut"].length;
+        titlePanel.GetComponent<Animation>().Play("TitleOut");
 
     }
 }

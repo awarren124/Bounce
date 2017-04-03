@@ -24,15 +24,16 @@ public class GameManager : MonoBehaviour {
     double specialFreq = 0.995f;
     static bool shrinkBall = false;
     public static UIManager ui;
-    static bool gameOver = false;
+    static bool gameOver = true;
     static bool readyToSpawn = true;
     public enum GameMode {Lives, KeepUp, Blind};
     public static GameMode gamemode = GameMode.Blind;
     public GameObject lostBallX;
+    public GameObject titlePanel;
     //    public b
     // Use this for initialization
     void Start() {
-        ui = new UIManager(scoreLabel, livesLabel, panel, lostBallX);
+        ui = new UIManager(scoreLabel, livesLabel, panel, lostBallX, titlePanel);
         Application.targetFrameRate = 60;
 
         //Level setup
@@ -60,98 +61,100 @@ public class GameManager : MonoBehaviour {
 
     // Update is called once per frame
     void FixedUpdate() {
-        if (!gameOver)
-        {
-            ballTimer += Time.fixedDeltaTime;
-            levelTimer += Time.fixedDeltaTime;
-            switch (gamemode) {
-                case GameMode.Lives:
-                    if (Random.Range(0.0F, 1.0F) > specialFreq && spawnSpecial)
-                    {
-                        SpecialBall specialball = Instantiate(specialBall, ballDropPoint, Quaternion.identity);
-                        spawnSpecial = false;
-                    }
-
-                    if (levelTimer > 4)
-                    {
-                        level++;
-                        if (ballTimerTrigger > 0.3)
+            if (!gameOver)
+            {
+                ballTimer += Time.fixedDeltaTime;
+                levelTimer += Time.fixedDeltaTime;
+                switch (gamemode)
+                {
+                    case GameMode.Lives:
+                        if (Random.Range(0.0F, 1.0F) > specialFreq && spawnSpecial)
                         {
-                            ballTimerTrigger -= 0.1f;
-                            //numOfBallsTrigger += 1;
+                            SpecialBall specialball = Instantiate(specialBall, ballDropPoint, Quaternion.identity);
+                            spawnSpecial = false;
                         }
-                        levelTimer = 0;
-                    }
 
-                    if (ballTimer > ballTimerTrigger)
-                    {//&& numOfBalls < numOfBallsTrigger) { //Every second if there are less than 3 balls
-
-                        //Make new ball
-                        Ball instantiatedBall = Instantiate(ball, ballDropPoint, Quaternion.identity);
-                        if (shrinkBall)
+                        if (levelTimer > 4)
                         {
-                            instantiatedBall.GetComponent<Animation>().Play("BallShrink");
+                            level++;
+                            if (ballTimerTrigger > 0.3)
+                            {
+                                ballTimerTrigger -= 0.1f;
+                                //numOfBallsTrigger += 1;
+                            }
+                            levelTimer = 0;
                         }
-                        ballTimer = 0;
 
-                        numOfBalls++;
-                    }
+                        if (ballTimer > ballTimerTrigger)
+                        {//&& numOfBalls < numOfBallsTrigger) { //Every second if there are less than 3 balls
 
-                    if (lives < 0)
-                        startGameOver();
-                    break;
-                /*case GameMode.KeepUp:
-                    if (score % 10 == 0 && readyToSpawn)
-                    {
-                        Ball instantiatedBall = Instantiate(ball, ballDropPoint, Quaternion.identity);
-                        if (shrinkBall)
-                            instantiatedBall.GetComponent<Animation>().Play("BallShrink");
-                        numOfBalls++;
-                        readyToSpawn = false;
-                    }
-                    if (lives < 0)
-                        startGameOver();
-                    break;*/
-                case GameMode.Blind:
-                    if (levelTimer > 4)
-                    {
-                        level++;
-                        if (ballTimerTrigger > 0.3)
+                            //Make new ball
+                            Ball instantiatedBall = Instantiate(ball, ballDropPoint, Quaternion.identity);
+                            if (shrinkBall)
+                            {
+                                instantiatedBall.GetComponent<Animation>().Play("BallShrink");
+                            }
+                            ballTimer = 0;
+
+                            numOfBalls++;
+                        }
+
+                        if (lives < 0)
+                            startGameOver();
+                        break;
+                    /*case GameMode.KeepUp:
+                        if (score % 10 == 0 && readyToSpawn)
                         {
-                            ballTimerTrigger -= 0.1f;
-                            //numOfBallsTrigger += 1;
+                            Ball instantiatedBall = Instantiate(ball, ballDropPoint, Quaternion.identity);
+                            if (shrinkBall)
+                                instantiatedBall.GetComponent<Animation>().Play("BallShrink");
+                            numOfBalls++;
+                            readyToSpawn = false;
                         }
-                        levelTimer = 0;
-                    }
-
-                    if (ballTimer > ballTimerTrigger)
-                    {//&& numOfBalls < numOfBallsTrigger) { //Every second if there are less than 3 balls
-
-                        //Make new ball
-                        Ball instantiatedBall = Instantiate(ball, ballDropPoint, Quaternion.identity);
-                        ballTimer = 0;
-
-                        numOfBalls++;
-                    }
-
-                    float lerp = Mathf.PingPong(Time.time, 1.25F);
-                    float alpha = Mathf.Lerp(1.25F, 0.0F, lerp);
-                    foreach (GameObject ball in GameObject.FindGameObjectsWithTag("Ball"))
-                    {
-                        if (!ball.GetComponent<Ball>().stopStrobing)
+                        if (lives < 0)
+                            startGameOver();
+                        break;*/
+                    case GameMode.Blind:
+                        if (levelTimer > 4)
                         {
-                            Color color = ball.GetComponent<SpriteRenderer>().material.color;
-                            color.a = alpha;
-                            ball.GetComponent<SpriteRenderer>().material.color = color;
+                            level++;
+                            if (ballTimerTrigger > 0.3)
+                            {
+                                ballTimerTrigger -= 0.1f;
+                                //numOfBallsTrigger += 1;
+                            }
+                            levelTimer = 0;
                         }
-                    }
 
-                    if (lives < 0)
-                        startGameOver();
-                    break;
+                        if (ballTimer > ballTimerTrigger)
+                        {//&& numOfBalls < numOfBallsTrigger) { //Every second if there are less than 3 balls
+
+                            //Make new ball
+                            Ball instantiatedBall = Instantiate(ball, ballDropPoint, Quaternion.identity);
+                            ballTimer = 0;
+
+                            numOfBalls++;
+                        }
+
+                        float fadeTime = 1.20F;
+
+                        float lerp = Mathf.PingPong(Time.time, fadeTime);
+                        float alpha = Mathf.Lerp(fadeTime, 0.0F, lerp);
+                        foreach (GameObject ball in GameObject.FindGameObjectsWithTag("Ball"))
+                        {
+                            if (!ball.GetComponent<Ball>().stopStrobing)
+                            {
+                                Color color = ball.GetComponent<SpriteRenderer>().material.color;
+                                color.a = alpha;
+                                ball.GetComponent<SpriteRenderer>().material.color = color;
+                            }
+                        }
+
+                        if (lives < 0)
+                            startGameOver();
+                        break;
+                }
             }
-        }
-
     }
 
     public static void shrinkBalls() {
@@ -196,7 +199,7 @@ public class GameManager : MonoBehaviour {
         ui.showGameOverPanel();
     }
 
-    public static void restart() {
+    public static void restart(bool notMenu) {
         ui.restart();
         ballTimerTrigger = 1.0F;
         ballTimer = 0.0F;
@@ -229,6 +232,19 @@ public class GameManager : MonoBehaviour {
         ui.updateScore(score);
         ui.updateLives(lives);
         Time.timeScale = 1.0F;
+        gameOver = notMenu;
+    }
+
+    public static void startGame(GameMode gm)
+    {
+        ui.fadeOutTitle();
+        gamemode = gm;
         gameOver = false;
+    }
+
+    public static void goToMenu()
+    {
+        ui.menuIn();
+        restart(true);
     }
 }
