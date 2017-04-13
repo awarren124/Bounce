@@ -13,13 +13,13 @@ public class Platform : MonoBehaviour {
     void Start() {
         rb = GetComponent<Rigidbody2D>();
     }
-	
+
     // Update is called once per frame
     void Update() {
-        
+
         if(Input.touchCount > 0) {
             Vector2 touchPos = Input.GetTouch(0).position;
-            if(isReversed){
+            if(isReversed) {
                 touchPos.x = Screen.width - Input.GetTouch(0).position.x;
             }
             Vector3 worldPoint = Camera.main.ScreenToWorldPoint(touchPos);
@@ -30,22 +30,22 @@ public class Platform : MonoBehaviour {
             rb.MovePosition(new Vector2(transform.position.x - (transform.position.x - worldPoint.x) / 2, transform.position.y));
         }
 
-        if(expand){
+        if(expand) {
             expandPlatform();
             platformIsExpanded = true;
             expand = false;
         }
-        if(shrink){
+        if(shrink) {
             shrinkPlatform();
             platformIsExpanded = false;
             shrink = false;
         }
     }
 
-    public void expandPlatform(){
+    public void expandPlatform() {
         GetComponent<Animation>().Play("PlatformGrow");
     }
-    public void shrinkPlatform(){
+    public void shrinkPlatform() {
         GetComponent<Animation>().Play("PlatformShrink");
     }
 }

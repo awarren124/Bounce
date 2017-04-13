@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LostBallXDestroyer : MonoBehaviour
-{
+public class LostBallXDestroyer : MonoBehaviour {
 
     // Use this for initialization
-    void Start()
-    {
+    void Start() {
         Destroy(gameObject, gameObject.GetComponent<Animation>()["LostBallX"].time);
 
     }

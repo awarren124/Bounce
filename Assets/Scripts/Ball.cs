@@ -10,47 +10,54 @@ public class Ball : MonoBehaviour {
     public static bool expandBalls = false;
     int bounceThresh = 1;
     public bool stopStrobing = false;
-
-	// Use this for initialization
-	void Start () {
+    float seenTimer = 0.0F;
+    // Use this for initialization
+    void Start() {
         //When instantiated, make add random force left or right
         GetComponent<Rigidbody2D>().AddForce(new Vector2(Random.Range(-200, 200), 0));
-	}
+    }
 
     // Update is called once per frame
     void Update() {
 
         //If the ball has hit the platform
-        if (startDissapearing) {
+        if(startDissapearing) {
             stopStrobing = true;
-            //Lerp the alpha to zero.
-            Color color = GetComponent<SpriteRenderer>().material.color;
-            color.a -= Mathf.Lerp(0.0f, 1.0f, t);
-            GetComponent<SpriteRenderer>().material.color = color;
-            t += 0.5f * Time.deltaTime;
+            seenTimer += Time.deltaTime;
+            if(seenTimer < 0.1F) {
+                Color c = GetComponent<SpriteRenderer>().material.color;
+                c.a = 1.0F;
+                GetComponent<SpriteRenderer>().material.color = c;
+            } else {
+                //Lerp the alpha to zero.
+                Color color = GetComponent<SpriteRenderer>().material.color;
+                color.a -= Mathf.Lerp(0.0f, 1.0f, t);
+                GetComponent<SpriteRenderer>().material.color = color;
+                t += 0.5f * Time.deltaTime;
 
-            //When the ball is no longer visible, destory it
-            if (color.a <= 0) {
-                Destroy(gameObject);
-                GameManager.numOfBalls--;
+                //When the ball is no longer visible, destory it
+                if(color.a <= 0) {
+                    Destroy(gameObject);
+                    GameManager.numOfBalls--;
+                }
             }
         }
 
-	}
+    }
 
 
 
     void OnTriggerEnter2D(Collider2D col) {
 
         //If the ball goes past the trigger
-        if(col.tag == "FallTrigger"){
+        if(col.tag == "FallTrigger") {
             GameManager.lostBall(gameObject.transform.position);
             Destroy(gameObject);
         }
     }
 
-    void OnCollisionEnter2D(Collision2D colinfo){
-        if(colinfo.collider.tag == "Platform"){
+    void OnCollisionEnter2D(Collision2D colinfo) {
+        if(colinfo.collider.tag == "Platform") {
             //startDissapearing = true;
             bounceCount++;
             GameManager.bouncedBall();
@@ -60,8 +67,7 @@ public class Ball : MonoBehaviour {
         }
     }
 
-    public void gameOver()
-    {
+    public void gameOver() {
         GetComponent<Animation>().Play("GameOver");
         Destroy(gameObject, GetComponent<Animation>().GetClip("GameOver").length);
     }

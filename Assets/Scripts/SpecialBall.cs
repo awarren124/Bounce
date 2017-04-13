@@ -7,9 +7,10 @@ public class SpecialBall : MonoBehaviour {
     public bool active = false;
     float timer = 0.0F;
     Color color;
+    public Sprite plainSprite;
 
-    enum BallType {Reverse, BallShrink, PlatformExpand, Strobe, Slow};
-    //    enum BallType {Reverse = Color.red, BallShrink = Color.blue, PlatformExpand = Color.yellow, Strobe = Color.gray};
+    enum BallType { Reverse, BallShrink, PlatformExpand, Strobe, Slow };
+    //    enum BallType {Reverse = Color.red, BallShrink = Color.blue , PlatformExpand = Color.yellow, Strobe = Color.gray};
     //BallType type;
     BallType type;
     //string[] types = { "reverse", "shrink balls", "expand platform" , "strobe"};
@@ -17,34 +18,21 @@ public class SpecialBall : MonoBehaviour {
 
 
     // Use this for initialization
-    void Start () {
+    void Start() {
         type = (BallType)Random.Range(0, System.Enum.GetNames(typeof(BallType)).Length);
+        type = BallType.Reverse;
         cam = Camera.main;
-        switch(type) {
-            case BallType.Reverse:
-                GetComponent<SpriteRenderer>().color = Color.red;
-                break;
-            case BallType.BallShrink:
-                GetComponent<SpriteRenderer>().color = Color.blue;
-                break;
-            case BallType.PlatformExpand:
-                GetComponent<SpriteRenderer>().color = Color.yellow;
-                break;
-            case BallType.Strobe:
-                GetComponent<SpriteRenderer>().color = Color.gray;
-                break;
-            case BallType.Slow:
-                GetComponent<SpriteRenderer>().color = Color.cyan;
-                break;
-        }
+        /**/
 
         GetComponent<Rigidbody2D>().AddForce(new Vector2(Random.Range(-200, 200), 0));
+        GetComponent<Animation>()["SpecialBallMystery"].time = Random.Range(0, GetComponent<Animation>()["SpecialBallMystery"].length);
+        GetComponent<Animation>().Play("SpecialBallMystery");
     }
-	
-	// Update is called once per frame
-	void Update () {
+
+    // Update is called once per frame
+    void Update() {
         //print("Kinematic: " + isKinematic);
-        if(active){
+        if(active) {
             //print(timer);
             //print(GetComponent<SpriteRenderer>().material.color.a);
             timer += Time.deltaTime;
@@ -55,25 +43,43 @@ public class SpecialBall : MonoBehaviour {
                 color.a = alpha;
                 GetComponent<SpriteRenderer>().material.color = color;
             }
-            if(timer > 10){
-                
+            if(timer > 10) {
+
                 shrink();
             }
         }
     }
 
-    void OnCollisionEnter2D(Collision2D colinfo){
-        if(colinfo.collider.tag == "Platform"){
+    void OnCollisionEnter2D(Collision2D colinfo) {
+        if(colinfo.collider.tag == "Platform") {
+            GetComponent<Animation>().Stop("SpecialBallMystery");
+            GetComponent<SpriteRenderer>().sprite = plainSprite;
+            switch(type) {
+                case BallType.Reverse:
+                    GetComponent<SpriteRenderer>().color = Color.red;
+                    break;
+                case BallType.BallShrink:
+                    GetComponent<SpriteRenderer>().color = Color.blue;
+                    break;
+                case BallType.PlatformExpand:
+                    GetComponent<SpriteRenderer>().color = Color.yellow;
+                    break;
+                case BallType.Strobe:
+                    GetComponent<SpriteRenderer>().color = Color.gray;
+                    break;
+                case BallType.Slow:
+                    GetComponent<SpriteRenderer>().color = Color.cyan;
+                    break;
+            }
+
             grow();
-            //GetComponent<Rigidbody2D>().isKinematic = true;
-            //GetComponent<Animation>().Play();
         }
     }
 
-    void grow(){
+    void grow() {
         if(type != BallType.Strobe) {
             GetComponent<SpriteRenderer>().sortingOrder = -100;
-        }else{
+        } else {
             GetComponent<SpriteRenderer>().sortingOrder = 100;
             //GetComponent<Animation>().Play("StrobeSpecialBallGrow");
         }
@@ -83,11 +89,13 @@ public class SpecialBall : MonoBehaviour {
         GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Kinematic;
         GetComponent<Rigidbody2D>().velocity = Vector2.zero;
         //GetComponent<SpriteRenderer>().sortingOrder = 100;
+
     }
 
-    void growOver (){
+    void growOver() {
         switch(type) {
             case BallType.Reverse:
+                Time.timeScale = 0.6F;
                 Platform.isReversed = true;
                 break;
             case BallType.BallShrink:
@@ -103,16 +111,18 @@ public class SpecialBall : MonoBehaviour {
         active = true;
     }
 
-    public void shrink(){
+    public void shrink() {
         active = false;
         cam.backgroundColor = Color.black;
         GetComponent<Animation>().Play("SpecialBallShrink");
+        if(type == BallType.Reverse)
+            Platform.isReversed = false;
     }
 
-    void shrinkOver(){
+    void shrinkOver() {
         switch(type) {
             case BallType.Reverse:
-                Platform.isReversed = false;
+                Time.timeScale = 1.0F;
                 break;
             case BallType.BallShrink:
                 GameManager.expandBalls();
@@ -128,17 +138,15 @@ public class SpecialBall : MonoBehaviour {
         Destroy(gameObject);
     }
 
-    void OnTriggerEnter2D(Collider2D col){
-        if(col.tag == "FallTrigger"){
+    void OnTriggerEnter2D(Collider2D col) {
+        if(col.tag == "FallTrigger") {
             GameManager.spawnSpecial = true;
             Destroy(gameObject);
         }
     }
 
-    private void OnDestroy()
-    {
-        switch (type)
-        {
+    private void OnDestroy() {
+        switch(type) {
             case BallType.Reverse:
                 Platform.isReversed = false;
                 break;
@@ -146,8 +154,7 @@ public class SpecialBall : MonoBehaviour {
                 GameManager.expandBalls();
                 break;
             case BallType.PlatformExpand:
-                if (Platform.platformIsExpanded)
-                {
+                if(Platform.platformIsExpanded) {
                     Platform.shrink = true;
                 }
                 break;
@@ -158,6 +165,26 @@ public class SpecialBall : MonoBehaviour {
         GameManager.spawnSpecial = true;
     }
 
-
+    void setColor(string color) {
+        switch(color) {
+            case "red":
+                type = BallType.Reverse;
+                break;
+            case "blue":
+                type = BallType.BallShrink;
+                break;
+            case "yellow":
+                type = BallType.PlatformExpand;
+                break;
+            case "cyan":
+                type = BallType.Slow;
+                break;
+            case "gray":
+                type = BallType.Strobe;
+                break;
+            default:
+                break;
+        }
+    }
 
 }
