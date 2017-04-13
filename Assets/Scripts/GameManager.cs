@@ -32,6 +32,7 @@ public class GameManager : MonoBehaviour {
     public GameObject titlePanel;
     public static bool isPaused = false;
     public static Vector2[] ballVelocities;
+    public static Vector2 sbVelocity;
     public GameObject pausePanel;
     public Button pauseButton;
     //    public b
@@ -258,8 +259,11 @@ public class GameManager : MonoBehaviour {
             print(ballVelocities[i]);
         }
         GameObject sb = GameObject.FindGameObjectWithTag("SpecialBall");
-        sb.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Kinematic;
-        sb.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+        if(sb != null) {
+            sb.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Kinematic;
+            sbVelocity = sb.GetComponent<Rigidbody2D>().velocity;
+            sb.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+        }
     }
 
     public static void play(bool isPauseRestart) {
@@ -279,6 +283,9 @@ public class GameManager : MonoBehaviour {
             }
         }
         GameObject sb = GameObject.FindGameObjectWithTag("SpecialBall");
-        sb.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
+        if(sb != null) {
+            sb.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
+            sb.GetComponent<Rigidbody2D>().velocity = sbVelocity;
+        }
     }
 }
