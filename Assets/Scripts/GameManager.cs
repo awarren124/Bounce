@@ -35,6 +35,12 @@ public class GameManager : MonoBehaviour {
     public static Vector2 sbVelocity;
     public GameObject pausePanel;
     public Button pauseButton;
+    public GameObject timerPanel;
+    public static bool updateUiSBTimer = false;
+    public Star star;
+    float starFreq = 0.995F;
+    public Text starsLabel;
+    public GameObject shopPanel;
     //    public b
     // Use this for initialization
     void Start() {
@@ -43,7 +49,15 @@ public class GameManager : MonoBehaviour {
         #elif UNITY_IPHONE
                 Application.OpenURL("itms-apps://itunes.apple.com/app/idYOUR_ID");
         #endif*/
-        ui = new UIManager(scoreLabel, livesLabel, panel, lostBallX, titlePanel, pausePanel, pauseButton);
+        if(!PlayerPrefs.HasKey("Stars"))
+            PlayerPrefs.SetInt("Stars", 0);
+
+        if(!PlayerPrefs.HasKey("ActiveSkin"))
+            PlayerPrefs.SetInt("ActiveSkin", 0);
+
+        PlayerPrefs.Save();
+
+        ui = new UIManager(scoreLabel, livesLabel, panel, lostBallX, titlePanel, pausePanel, pauseButton, timerPanel, starsLabel, shopPanel);
         Application.targetFrameRate = 60;
 
         //Level setup
@@ -71,6 +85,10 @@ public class GameManager : MonoBehaviour {
 
     // Update is called once per frame
     void FixedUpdate() {
+
+        if(updateUiSBTimer)
+            ui.updateSpecialBallTimer(Time.fixedDeltaTime);
+        ui.updateStarsLabel();
         if(!gameOver && !isPaused) {
             ballTimer += Time.fixedDeltaTime;
             levelTimer += Time.fixedDeltaTime;
@@ -79,6 +97,11 @@ public class GameManager : MonoBehaviour {
                     if(Random.Range(0.0F, 1.0F) > specialFreq && spawnSpecial) {
                         SpecialBall specialball = Instantiate(specialBall, ballDropPoint, Quaternion.identity);
                         spawnSpecial = false;
+                    }
+
+                    if(Random.Range(0.0F, 1.0F) > starFreq){
+                        Star instStar = Instantiate(star, new Vector2(Random.Range(-3, 3), ballDropPoint.y), Quaternion.identity);
+                        instStar.GetComponent<Rigidbody2D>().AddTorque(Random.Range(-360.0F, 360.0F));
                     }
 
                     if(levelTimer > 0.4) {
@@ -187,6 +210,7 @@ public class GameManager : MonoBehaviour {
     public void startGameOver() {
         gameOver = true;
         Time.timeScale = 1.0F;
+        Time.fixedDeltaTime = Time.timeScale * 0.02F;
         GameObject[] balls = GameObject.FindGameObjectsWithTag("Ball");
         for(int i = 0; i < balls.Length; i++) {
             balls[i].GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Kinematic;
@@ -204,7 +228,6 @@ public class GameManager : MonoBehaviour {
         ballTimerTrigger = 1.0F;
         ballTimer = 0.0F;
         GameObject[] balls = GameObject.FindGameObjectsWithTag("Ball");
-        print("Length" + balls.Length);
         for(int i = 0; i < balls.Length; i++) {
             Ball b = balls[i].GetComponent<Ball>();
             b.gameOver();
@@ -212,7 +235,7 @@ public class GameManager : MonoBehaviour {
 
         try {
             SpecialBall sb = GameObject.FindGameObjectWithTag("SpecialBall").GetComponent<SpecialBall>();
-            if(sb.active) {
+            if(sb.expanded) {
                 sb.shrink();
             } else {
                 sb.GetComponent<Animation>().Play("GameOver");
@@ -228,11 +251,12 @@ public class GameManager : MonoBehaviour {
         ui.updateScore(score);
         ui.updateLives(lives);
         Time.timeScale = 1.0F;
+        Time.fixedDeltaTime = Time.timeScale * 0.02F;
         gameOver = notMenu;
     }
 
     public static void startGame(GameMode gm) {
-        ui.fadeOutTitle();
+        ui.fadeOutTitle(true);
         Debug.Log("StartGAme");
         ui.showPauseButton();
         gamemode = gm;
@@ -240,7 +264,7 @@ public class GameManager : MonoBehaviour {
     }
 
     public static void goToMenu(bool isPause) {
-        ui.menuIn(isPause);
+        ui.menuIn(isPause, true);
         restart(true, isPause, false);
     }
 
@@ -256,10 +280,10 @@ public class GameManager : MonoBehaviour {
                 ballVelocities[i].y = -ballVelocities[i].y;
             }
             balls[i].GetComponent<Rigidbody2D>().velocity = Vector2.zero;
-            print(ballVelocities[i]);
         }
         GameObject sb = GameObject.FindGameObjectWithTag("SpecialBall");
         if(sb != null) {
+            print("NOT NULL");
             sb.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Kinematic;
             sbVelocity = sb.GetComponent<Rigidbody2D>().velocity;
             sb.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
@@ -283,9 +307,14 @@ public class GameManager : MonoBehaviour {
             }
         }
         GameObject sb = GameObject.FindGameObjectWithTag("SpecialBall");
-        if(sb != null) {
+        if(sb != null && !sb.GetComponent<SpecialBall>().expanded) {
             sb.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
             sb.GetComponent<Rigidbody2D>().velocity = sbVelocity;
         }
+    }
+
+    public static void showShop(){
+        ui.fadeOutTitle(false);
+        ui.showShop();
     }
 }

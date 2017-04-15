@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using UnityEngine.UI;
 
 public class SpecialBall : MonoBehaviour {
 
@@ -8,6 +9,7 @@ public class SpecialBall : MonoBehaviour {
     float timer = 0.0F;
     Color color;
     public Sprite plainSprite;
+    public bool expanded = false;
 
     enum BallType { Reverse, BallShrink, PlatformExpand, Strobe, Slow };
     //    enum BallType {Reverse = Color.red, BallShrink = Color.blue , PlatformExpand = Color.yellow, Strobe = Color.gray};
@@ -24,6 +26,7 @@ public class SpecialBall : MonoBehaviour {
         cam = Camera.main;
         /**/
 
+
         GetComponent<Rigidbody2D>().AddForce(new Vector2(Random.Range(-200, 200), 0));
         GetComponent<Animation>()["SpecialBallMystery"].time = Random.Range(0, GetComponent<Animation>()["SpecialBallMystery"].length);
         GetComponent<Animation>().Play("SpecialBallMystery");
@@ -35,7 +38,9 @@ public class SpecialBall : MonoBehaviour {
         if(active) {
             //print(timer);
             //print(GetComponent<SpriteRenderer>().material.color.a);
-            timer += Time.deltaTime;
+
+            if(!GameManager.isPaused)
+                timer += Time.deltaTime;
             if(type == BallType.Strobe) {
                 float lerp = Mathf.PingPong(Time.time, 1.0F);
                 float alpha = Mathf.Lerp(1.0F, 0.0F, lerp);
@@ -96,6 +101,7 @@ public class SpecialBall : MonoBehaviour {
         switch(type) {
             case BallType.Reverse:
                 Time.timeScale = 0.6F;
+                Time.fixedDeltaTime = Time.timeScale * 0.02F;
                 Platform.isReversed = true;
                 break;
             case BallType.BallShrink:
@@ -106,13 +112,18 @@ public class SpecialBall : MonoBehaviour {
                 break;
             case BallType.Slow:
                 Time.timeScale = 0.5F;
+                Time.fixedDeltaTime = Time.timeScale * 0.02F;
                 break;
         }
+        expanded = true;
         active = true;
+        GameManager.ui.startSpecialBallTimer();
     }
 
     public void shrink() {
+        print("SHRINKING");
         active = false;
+        expanded = false;
         cam.backgroundColor = Color.black;
         GetComponent<Animation>().Play("SpecialBallShrink");
         if(type == BallType.Reverse)
@@ -123,6 +134,7 @@ public class SpecialBall : MonoBehaviour {
         switch(type) {
             case BallType.Reverse:
                 Time.timeScale = 1.0F;
+                Time.fixedDeltaTime = Time.timeScale * 0.02F;
                 break;
             case BallType.BallShrink:
                 GameManager.expandBalls();
@@ -132,6 +144,7 @@ public class SpecialBall : MonoBehaviour {
                 break;
             case BallType.Slow:
                 Time.timeScale = 1.0F;
+                Time.fixedDeltaTime = Time.timeScale * 0.02F;
                 break;
         }
         GameManager.spawnSpecial = true;
@@ -160,6 +173,7 @@ public class SpecialBall : MonoBehaviour {
                 break;
             case BallType.Slow:
                 Time.timeScale = 1.0F;
+                Time.fixedDeltaTime = Time.timeScale * 0.02F;
                 break;
         }
         GameManager.spawnSpecial = true;

@@ -13,9 +13,13 @@ public class UIManager {// : MonoBehaviour {
     GameObject pausePanel;
     Button pauseButton;
     public bool pauseInFrame = true;
+    GameObject timerPanel;
+    float sbTimer;
+    Text starsLabel;
+    GameObject shopPanel;
     // Use this for initialization
 
-    public UIManager(Text sL, Text lL, GameObject p, GameObject i, GameObject tp, GameObject pp, Button pb) {
+    public UIManager(Text sL, Text lL, GameObject p, GameObject i, GameObject tp, GameObject pp, Button pb, GameObject tip, Text stL, GameObject sp) {
         scoreLabel = sL;
         livesLabel = lL;
         panel = p;
@@ -23,6 +27,9 @@ public class UIManager {// : MonoBehaviour {
         titlePanel = tp;
         pausePanel = pp;
         pauseButton = pb;
+        timerPanel = tip;
+        starsLabel = stL;
+        shopPanel = sp;
     }
 
     public void updateLives(int lives) {
@@ -52,6 +59,11 @@ public class UIManager {// : MonoBehaviour {
             Debug.Log("restart(" + isPauseMenu + ", " + showButton + ")");
             showPauseButton();
         }
+
+//        if(!isPauseMenu) {
+            GameManager.updateUiSBTimer = false;
+            timerPanel.GetComponent<RectTransform>().sizeDelta = Vector2.zero;
+//        }
     }
 
     public void showLostBallX(Vector2 pos) {
@@ -59,27 +71,30 @@ public class UIManager {// : MonoBehaviour {
         GameObject xImg = GameObject.Instantiate(lostBallX, pos, Quaternion.identity);
     }
 
-    public void fadeOutTitle() {
+    public void fadeOutTitle(bool showLabelsAndButton) {
         titlePanel.GetComponent<Animation>()["TitleOut"].speed = 1;
         titlePanel.GetComponent<Animation>()["TitleOut"].time = 0;
         titlePanel.GetComponent<Animation>().Play("TitleOut");
 
-        scoreLabel.GetComponentInParent<Animation>()["LabelsIn"].speed = 1;
-        scoreLabel.GetComponentInParent<Animation>()["LabelsIn"].time = 0;
-        scoreLabel.GetComponentInParent<Animation>().Play("LabelsIn");
+        if(showLabelsAndButton) {
+            scoreLabel.GetComponentInParent<Animation>()["LabelsIn"].speed = 1;
+            scoreLabel.GetComponentInParent<Animation>()["LabelsIn"].time = 0;
+            scoreLabel.GetComponentInParent<Animation>().Play("LabelsIn");
 
-        Debug.Log("fadeouttitle");
-        showPauseButton();
+            showPauseButton();
+        }
     }
 
-    public void menuIn(bool isPause) {
+    public void menuIn(bool isPause, bool labels) {
         titlePanel.GetComponent<Animation>()["TitleOut"].speed = -1;
         titlePanel.GetComponent<Animation>()["TitleOut"].time = titlePanel.GetComponent<Animation>()["TitleOut"].length;
         titlePanel.GetComponent<Animation>().Play("TitleOut");
 
-        scoreLabel.GetComponentInParent<Animation>()["LabelsIn"].speed = -1;
-        scoreLabel.GetComponentInParent<Animation>()["LabelsIn"].time = scoreLabel.GetComponentInParent<Animation>()["LabelsIn"].length;
-        scoreLabel.GetComponentInParent<Animation>().Play("LabelsIn");
+        if(labels) {
+            scoreLabel.GetComponentInParent<Animation>()["LabelsIn"].speed = -1;
+            scoreLabel.GetComponentInParent<Animation>()["LabelsIn"].time = scoreLabel.GetComponentInParent<Animation>()["LabelsIn"].length;
+            scoreLabel.GetComponentInParent<Animation>().Play("LabelsIn");
+        }
 
         if(pauseInFrame)
             hidePauseButton();
@@ -89,7 +104,7 @@ public class UIManager {// : MonoBehaviour {
         pausePanel.GetComponent<Animation>()["UIIn"].speed = 1;
         pausePanel.GetComponent<Animation>()["UIIn"].time = 0.0F;
         pausePanel.GetComponent<Animation>().Play("UIIn");
-
+        GameManager.updateUiSBTimer = false;
         if(pauseInFrame)
             hidePauseButton();
     }
@@ -98,7 +113,7 @@ public class UIManager {// : MonoBehaviour {
         pausePanel.GetComponent<Animation>()["UIIn"].speed = -1;
         pausePanel.GetComponent<Animation>()["UIIn"].time = pausePanel.GetComponent<Animation>()["UIIn"].length;
         pausePanel.GetComponent<Animation>().Play("UIIn");
-
+        GameManager.updateUiSBTimer = true;
         if(isRestart) {
             Debug.Log("hidePauseMenu");
             showPauseButton();
@@ -118,4 +133,42 @@ public class UIManager {// : MonoBehaviour {
         pauseButton.GetComponentInParent<Animation>()["PauseIn"].time = pauseButton.GetComponent<Animation>()["PauseIn"].length;
         pauseButton.GetComponentInParent<Animation>().Play("PauseIn");
     }
+
+    public void startSpecialBallTimer(){
+        sbTimer = 0.0F;
+        GameManager.updateUiSBTimer = true;
+    }
+
+    public void updateSpecialBallTimer(float deltaTime){
+        //if(Time.time - sbInitialTime >= 10.0F){
+        sbTimer += deltaTime;
+        if(sbTimer >= 10.0F){
+            GameManager.updateUiSBTimer = false;
+            timerPanel.GetComponent<RectTransform>().sizeDelta = Vector2.zero;
+            return;
+        }
+        timerPanel.GetComponent<RectTransform>().sizeDelta = new Vector2(50, Screen.height - (sbTimer / 10.0F) * Screen.height);
+    }
+
+    public void updateStarsLabel(){
+        starsLabel.text = "Stars: " + PlayerPrefs.GetInt("Stars");
+    }
+
+    public void showShop(){
+        showStarsLabel();
+        shopPanel.GetComponent<ShopManager>().shopIn();
+    }
+
+    public void showStarsLabel(){
+        starsLabel.GetComponentInParent<Animation>()["StarLabelIn"].speed = 1;
+        starsLabel.GetComponentInParent<Animation>()["StarLabelIn"].time = 0.0F;
+        starsLabel.GetComponent<Animation>().Play("StarLabelIn");
+    }
+
+    public void hideStarsLabel(){
+        starsLabel.GetComponentInParent<Animation>()["StarLabelIn"].speed = -1;
+        starsLabel.GetComponentInParent<Animation>()["StarLabelIn"].time = starsLabel.GetComponent<Animation>()["StarLabelIn"].length;
+        starsLabel.GetComponent<Animation>().Play("StarLabelIn");
+    }
+
 }
