@@ -29,7 +29,8 @@ public class SpecialBall : MonoBehaviour {
 
         GetComponent<Rigidbody2D>().AddForce(new Vector2(Random.Range(-200, 200), 0));
         GetComponent<Animation>()["SpecialBallMystery"].time = Random.Range(0, GetComponent<Animation>()["SpecialBallMystery"].length);
-        GetComponent<Animation>().Play("SpecialBallMystery");
+        //GetComponent<Animation>().Play("SpecialBallMystery");
+        type = BallType.PlatformExpand;
     }
 
     // Update is called once per frame

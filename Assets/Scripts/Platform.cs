@@ -44,6 +44,16 @@ public class Platform : MonoBehaviour {
     }
 
     public void expandPlatform() {
+        switch(PlayerPrefs.GetInt("ActiveSkin")) {
+            case 0:
+            case 1:
+                GetComponent<SpriteRenderer>().drawMode = SpriteDrawMode.Tiled;
+                GetComponent<SpriteRenderer>().tileMode = SpriteTileMode.Continuous;
+                break;
+            default:
+                GetComponent<SpriteRenderer>().drawMode = SpriteDrawMode.Sliced;
+                break;
+        }
         GetComponent<Animation>().Play("PlatformGrow");
     }
     public void shrinkPlatform() {
