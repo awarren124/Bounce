@@ -17,6 +17,7 @@ public class Star : MonoBehaviour {
     void OnCollisionEnter2D(Collision2D colinfo) {
         if(colinfo.collider.tag == "Platform") {
             GetComponent<Animation>().Play("StarCollected");
+            //Destroy(gameObject, GetComponent<Animation>()["StarCollected"].length);
         }
     }
 

@@ -158,7 +158,7 @@ public class UIManager {// : MonoBehaviour {
         showStarsLabel();
         shopPanel.GetComponent<ShopManager>().shopIn();
     }
-
+        
     public void showStarsLabel(){
         starsLabel.GetComponentInParent<Animation>()["StarLabelIn"].speed = 1;
         starsLabel.GetComponentInParent<Animation>()["StarLabelIn"].time = 0.0F;

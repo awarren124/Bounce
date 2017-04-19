@@ -15,6 +15,7 @@ public class ShopManager : MonoBehaviour {
     Color lockedColor = Color.gray;
     Color unlockedColor = Color.blue;
     Color activeColor= Color.yellow;
+    int price = 00;
 
 	void Start () {
         if(!PlayerPrefs.HasKey("unlocked")){
@@ -22,6 +23,7 @@ public class ShopManager : MonoBehaviour {
                 unlocked = new bool[numOfItems];
                 unlocked[i] = false;
             }
+            unlocked[0] = true;
             PlayerPrefsX.SetBoolArray("unlocked", unlocked);
             PlayerPrefs.Save();
         }else{
@@ -31,16 +33,18 @@ public class ShopManager : MonoBehaviour {
         for(int i = 0; i < numOfItems; i++){
             if(unlocked[i]){
                 buttons[i].GetComponent<Image>().color = unlockedColor;
+                hidePrice(i);
                 setShopPicture(i);
             }else{
                 buttons[i].GetComponent<Image>().color = lockedColor;
             }
         }
         buttons[PlayerPrefs.GetInt("ActiveSkin")].GetComponent<Image>().color = activeColor;
+        setActiveSkin(PlayerPrefs.GetInt("ActiveSkin"));
 	}
 	
     public void shopIn(){
-        GetComponent<Animation>()["ShopIn"].speed = 1;;
+        GetComponent<Animation>()["ShopIn"].speed = 1;
         GetComponent<Animation>()["ShopIn"].time = 0.0F;
         GetComponent<Animation>().Play("ShopIn");
     }
@@ -56,7 +60,7 @@ public class ShopManager : MonoBehaviour {
     }
 
     bool check(){
-        if(PlayerPrefs.GetInt("Stars") >= 1){
+        if(PlayerPrefs.GetInt("Stars") >= price){
             return true;
         }
         return false;
@@ -65,10 +69,11 @@ public class ShopManager : MonoBehaviour {
     void unlock(int index){
         unlocked[index] = true;
         PlayerPrefsX.SetBoolArray("unlocked", unlocked);
-        PlayerPrefs.SetInt("Stars", PlayerPrefs.GetInt("Stars") - 1);
+        PlayerPrefs.SetInt("Stars", PlayerPrefs.GetInt("Stars") - price);
         setActiveSkin(index);
         PlayerPrefs.Save();
         buttons[index].GetComponent<Image>().color = unlockedColor;
+        hidePrice(index);
         setShopPicture(index);
     }
 
@@ -87,12 +92,23 @@ public class ShopManager : MonoBehaviour {
         GetComponent<Animation>()["ShopIn"].time = GetComponent<Animation>()["ShopIn"].length;
         GetComponent<Animation>().Play("ShopIn");
         GameManager.ui.menuIn(false, false);
+        GameManager.ui.hideStarsLabel();
     }
 
     void setShopPicture(int index){
         foreach(Transform child in buttons[index].transform) {
             if(child.CompareTag("SkinPreview")) {
                 child.gameObject.GetComponent<Image>().sprite = skins[index];
+                child.gameObject.GetComponent<Image>().transform.localScale = Vector2.one;
+                child.gameObject.GetComponent<Image>().rectTransform.sizeDelta = new Vector2(185, 100);
+            }
+        }
+    }
+
+    void hidePrice(int index){
+        foreach(Transform child in buttons[index].transform) {
+            if(child.CompareTag("Price")) {
+                child.gameObject.SetActive(false);
             }
         }
     }

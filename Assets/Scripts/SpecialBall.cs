@@ -121,7 +121,6 @@ public class SpecialBall : MonoBehaviour {
     }
 
     public void shrink() {
-        print("SHRINKING");
         active = false;
         expanded = false;
         cam.backgroundColor = Color.black;

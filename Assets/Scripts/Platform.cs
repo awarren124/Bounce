@@ -8,17 +8,19 @@ public class Platform : MonoBehaviour {
     public static bool platformIsExpanded = false;
     public static bool isReversed = false;
     Rigidbody2D rb;
+    float sensitivity = 1.5F;
 
     // Use this for initialization
     void Start() {
         rb = GetComponent<Rigidbody2D>();
+        GetComponent<SpriteRenderer>();
     }
 
     // Update is called once per frame
     void Update() {
 
         //if(Input.touchCount > 0) {
-            Vector2 touchPos = Input.mousePosition;//Input.GetTouch(0).position;
+        Vector2 touchPos = Input.mousePosition;//Input.GetTouch(0).position;
             if(isReversed) {
                 touchPos.x = Screen.width - Input.GetTouch(0).position.x;
             }
@@ -26,7 +28,7 @@ public class Platform : MonoBehaviour {
 
             worldPoint.z = transform.position.z;
             worldPoint.y = transform.position.y;
-            rb.MovePosition(new Vector2(transform.position.x - (transform.position.x - worldPoint.x) / 2, transform.position.y));
+            rb.MovePosition(new Vector2(transform.position.x - (transform.position.x - worldPoint.x) / sensitivity, transform.position.y));
         //}
 
         if(expand) {

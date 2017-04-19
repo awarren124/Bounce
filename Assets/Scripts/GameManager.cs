@@ -150,6 +150,11 @@ public class GameManager : MonoBehaviour {
                         levelTimer = 0;
                     }
 
+                    if(Random.Range(0.0F, 1.0F) > starFreq){
+                        Star instStar = Instantiate(star, new Vector2(Random.Range(-3, 3), ballDropPoint.y), Quaternion.identity);
+                        instStar.GetComponent<Rigidbody2D>().AddTorque(Random.Range(-360.0F, 360.0F));
+                    }
+
                     if(ballTimer > ballTimerTrigger) {//&& numOfBalls < numOfBallsTrigger) { //Every second if there are less than 3 balls
 
                         //Make new ball
@@ -244,6 +249,14 @@ public class GameManager : MonoBehaviour {
         } catch(System.Exception) {
         }
 
+        GameObject[] stars = GameObject.FindGameObjectsWithTag("Star");
+
+        if(stars.Length != 0) {
+            foreach(GameObject star in stars) {
+                star.GetComponent<Animation>().Play("StarGameOver");
+                Destroy(star, star.GetComponent<Animation>()["StarGameOver"].length);
+            }
+        }
         //GameObject.FindGameObjectWithTag("SpecialBall");
 
         score = 0;
@@ -281,12 +294,23 @@ public class GameManager : MonoBehaviour {
             }
             balls[i].GetComponent<Rigidbody2D>().velocity = Vector2.zero;
         }
-        GameObject sb = GameObject.FindGameObjectWithTag("SpecialBall");
-        if(sb != null) {
-            print("NOT NULL");
-            sb.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Kinematic;
-            sbVelocity = sb.GetComponent<Rigidbody2D>().velocity;
-            sb.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+        try {
+            
+            GameObject sb = GameObject.FindGameObjectWithTag("SpecialBall");
+            if(sb != null) {
+                print("NOT NULL");
+                sb.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Kinematic;
+                sbVelocity = sb.GetComponent<Rigidbody2D>().velocity;
+                sb.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+            }
+            GameObject[] stars = GameObject.FindGameObjectsWithTag("Star");
+            if(stars.Length != 0){
+                foreach(GameObject star in stars){
+                    star.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Kinematic;
+                    star.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+                }
+            }
+            }catch(System.Exception){
         }
     }
 
@@ -306,10 +330,19 @@ public class GameManager : MonoBehaviour {
                 balls[i].GetComponent<Rigidbody2D>().velocity = ballVelocities[i];
             }
         }
-        GameObject sb = GameObject.FindGameObjectWithTag("SpecialBall");
-        if(sb != null && !sb.GetComponent<SpecialBall>().expanded) {
-            sb.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
-            sb.GetComponent<Rigidbody2D>().velocity = sbVelocity;
+        try {
+            GameObject sb = GameObject.FindGameObjectWithTag("SpecialBall");
+            if(sb != null && !sb.GetComponent<SpecialBall>().expanded) {
+                sb.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
+                sb.GetComponent<Rigidbody2D>().velocity = sbVelocity;
+            }
+            GameObject[] stars = GameObject.FindGameObjectsWithTag("Star");
+            if(stars.Length != 0){
+                foreach(GameObject star in stars){
+                    star.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
+                }
+            }
+        }catch(System.Exception){
         }
     }
 
