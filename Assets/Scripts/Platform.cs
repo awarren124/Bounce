@@ -19,8 +19,8 @@ public class Platform : MonoBehaviour {
     // Update is called once per frame
     void Update() {
 
-        //if(Input.touchCount > 0) {
-        Vector2 touchPos = Input.mousePosition;//Input.GetTouch(0).position;
+        if(Input.touchCount > 0) {
+        Vector2 touchPos = Input.GetTouch(0).position;
             if(isReversed) {
                 touchPos.x = Screen.width - Input.GetTouch(0).position.x;
             }
@@ -29,7 +29,7 @@ public class Platform : MonoBehaviour {
             worldPoint.z = transform.position.z;
             worldPoint.y = transform.position.y;
             rb.MovePosition(new Vector2(transform.position.x - (transform.position.x - worldPoint.x) / sensitivity, transform.position.y));
-        //}
+        }
 
         if(expand) {
             expandPlatform();
@@ -44,19 +44,30 @@ public class Platform : MonoBehaviour {
     }
 
     public void expandPlatform() {
-        switch(PlayerPrefs.GetInt("ActiveSkin")) {
-            case 0:
-            case 1:
-                GetComponent<SpriteRenderer>().drawMode = SpriteDrawMode.Tiled;
-                GetComponent<SpriteRenderer>().tileMode = SpriteTileMode.Continuous;
-                break;
-            default:
-                GetComponent<SpriteRenderer>().drawMode = SpriteDrawMode.Sliced;
-                break;
-        }
+        setDrawMode(PlayerPrefs.GetInt("ActiveSkin"));
         GetComponent<Animation>().Play("PlatformGrow");
     }
     public void shrinkPlatform() {
         GetComponent<Animation>().Play("PlatformShrink");
+    }
+
+    public void setDrawMode(int activeSkin) {
+        switch(activeSkin) {
+            case 0:
+            case 1:
+            case 3:
+            case 5:
+            case 6:
+                GetComponent<SpriteRenderer>().drawMode = SpriteDrawMode.Sliced;
+                break;
+            case 2:
+            case 4:
+                GetComponent<SpriteRenderer>().drawMode = SpriteDrawMode.Tiled;
+                GetComponent<SpriteRenderer>().tileMode = SpriteTileMode.Continuous;
+                break;
+            default:
+                GetComponent<SpriteRenderer>().drawMode = SpriteDrawMode.Simple;
+                break;
+        }
     }
 }

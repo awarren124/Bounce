@@ -6,8 +6,6 @@ public class UIManager {// : MonoBehaviour {
     Text scoreLabel;
     Text livesLabel;
     GameObject panel;
-    CanvasRenderer[] panelChildren;
-    CanvasRenderer panelRenderer;
     GameObject lostBallX;
     GameObject titlePanel;
     GameObject pausePanel;
@@ -40,8 +38,12 @@ public class UIManager {// : MonoBehaviour {
         scoreLabel.text = "Score: " + score;
     }
 
-    public void showGameOverPanel() {
-
+    public void showGameOverPanel(string gm) {
+        foreach(Transform child in panel.transform) {
+            if(child.CompareTag("High Score")) {
+                child.gameObject.GetComponent<Text>().text = "High Score:\n" + PlayerPrefs.GetInt(gm);
+            }
+        }
         panel.GetComponentInChildren<Button>().interactable = true;
         panel.GetComponent<Animation>()["UIIn"].speed = 1;
         panel.GetComponent<Animation>()["UIIn"].time = 0.0F;
@@ -69,6 +71,7 @@ public class UIManager {// : MonoBehaviour {
     public void showLostBallX(Vector2 pos) {
         pos.y += 2;
         GameObject xImg = GameObject.Instantiate(lostBallX, pos, Quaternion.identity);
+        GameObject.Destroy(xImg, xImg.GetComponentInChildren<Animation>()["LostBallX"].length);
     }
 
     public void fadeOutTitle(bool showLabelsAndButton) {

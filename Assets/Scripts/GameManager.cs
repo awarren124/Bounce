@@ -19,12 +19,11 @@ public class GameManager : MonoBehaviour {
     public static int lives = 3;
     static int level = 1;
     static float ballTimerTrigger = 1.0f;
-    static int numOfBallsTrigger = 3;
     public static bool spawnSpecial = true;
     double specialFreq = 0.995f;
     static bool shrinkBall = false;
     public static UIManager ui;
-    static bool gameOver = true;
+    public static bool gameOver = true;
     static bool readyToSpawn = true;
     public enum GameMode { Lives, KeepUp, Blind };
     public static GameMode gamemode = GameMode.Blind;
@@ -38,22 +37,25 @@ public class GameManager : MonoBehaviour {
     public GameObject timerPanel;
     public static bool updateUiSBTimer = false;
     public Star star;
-    float starFreq = 0.995F;
+    float starFreq = 0.997F;
     public Text starsLabel;
     public GameObject shopPanel;
     //    public b
     // Use this for initialization
     void Start() {
-        /*#if UNITY_ANDROID
-         Application.OpenURL("market://details?id=YOUR_ID");
-        #elif UNITY_IPHONE
-                Application.OpenURL("itms-apps://itunes.apple.com/app/idYOUR_ID");
-        #endif*/
+
+
         if(!PlayerPrefs.HasKey("Stars"))
             PlayerPrefs.SetInt("Stars", 0);
 
         if(!PlayerPrefs.HasKey("ActiveSkin"))
             PlayerPrefs.SetInt("ActiveSkin", 0);
+
+        if(!PlayerPrefs.HasKey("BlindHighScore"))
+            PlayerPrefs.SetInt("BlindHighScore", 0);
+
+        if(!PlayerPrefs.HasKey("LivesHighScore"))
+            PlayerPrefs.SetInt("LivesHighScore", 0);
 
         PlayerPrefs.Save();
 
@@ -86,10 +88,10 @@ public class GameManager : MonoBehaviour {
     // Update is called once per frame
     void FixedUpdate() {
 
-        if(updateUiSBTimer)
-            ui.updateSpecialBallTimer(Time.fixedDeltaTime);
         ui.updateStarsLabel();
         if(!gameOver && !isPaused) {
+            if(updateUiSBTimer)
+                ui.updateSpecialBallTimer(Time.fixedDeltaTime);
             ballTimer += Time.fixedDeltaTime;
             levelTimer += Time.fixedDeltaTime;
             switch(gamemode) {
@@ -128,18 +130,6 @@ public class GameManager : MonoBehaviour {
                     if(lives < 0)
                         startGameOver();
                     break;
-                /*case GameMode.KeepUp:
-                    if (score % 10 == 0 && readyToSpawn)
-                    {
-                        Ball instantiatedBall = Instantiate(ball, ballDropPoint, Quaternion.identity);
-                        if (shrinkBall)
-                            instantiatedBall.GetComponent<Animation>().Play("BallShrink");
-                        numOfBalls++;
-                        readyToSpawn = false;
-                    }
-                    if (lives < 0)
-                        startGameOver();
-                    break;*/
                 case GameMode.Blind:
                     if(levelTimer > 4) {
                         level++;
@@ -152,7 +142,7 @@ public class GameManager : MonoBehaviour {
 
                     if(Random.Range(0.0F, 1.0F) > starFreq){
                         Star instStar = Instantiate(star, new Vector2(Random.Range(-3, 3), ballDropPoint.y), Quaternion.identity);
-                        instStar.GetComponent<Rigidbody2D>().AddTorque(Random.Range(-360.0F, 360.0F));
+                        instStar.GetComponent<Rigidbody2D>().AddTorque(Random.Range(-25.0F, 25.0F));
                     }
 
                     if(ballTimer > ballTimerTrigger) {//&& numOfBalls < numOfBallsTrigger) { //Every second if there are less than 3 balls
@@ -203,7 +193,11 @@ public class GameManager : MonoBehaviour {
         numOfBalls--;
         lives -= 1;
         ui.showLostBallX(pos);
-        ui.updateLives(lives);
+        if(lives >= 0) {
+            ui.updateLives(lives);
+        }else {
+            ui.updateLives(0);
+        }
     }
 
     public static void bouncedBall() {
@@ -214,6 +208,21 @@ public class GameManager : MonoBehaviour {
 
     public void startGameOver() {
         gameOver = true;
+        string stringGm = "";
+        if(gamemode == GameMode.Lives) {
+            stringGm = "LivesHighScore";
+            if(score > PlayerPrefs.GetInt("LivesHighScore")) {
+                PlayerPrefs.SetInt("LivesHighScore", score);
+                PlayerPrefs.Save();
+            }
+        }else if(gamemode == GameMode.Blind) {
+            stringGm = "BlindHighScore";
+            if(score > PlayerPrefs.GetInt("BlindHighScore")) {
+                PlayerPrefs.SetInt("BlindHighScore", score);
+                PlayerPrefs.Save();
+            }
+        }
+
         Time.timeScale = 1.0F;
         Time.fixedDeltaTime = Time.timeScale * 0.02F;
         GameObject[] balls = GameObject.FindGameObjectsWithTag("Ball");
@@ -222,7 +231,29 @@ public class GameManager : MonoBehaviour {
             balls[i].GetComponent<Rigidbody2D>().velocity = Vector2.zero;
         }
 
-        ui.showGameOverPanel();
+        GameObject sb = GameObject.FindGameObjectWithTag("SpecialBall");
+        if(sb != null) {
+            print("NOT NULL");
+            if(sb.GetComponent<SpecialBall>().expanded) {
+                sb.GetComponent<SpecialBall>().shrink();
+            } else if(sb.GetComponent<SpecialBall>().expanding) {
+                Destroy(sb);
+            } else {
+                sb.gameObject.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Kinematic;
+                sb.gameObject.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+            }
+        }
+    
+        GameObject[] stars = GameObject.FindGameObjectsWithTag("Star");
+
+        if(stars.Length != 0) {
+            foreach(GameObject star in stars) {
+                star.GetComponent<Animation>().Play("StarGameOver");
+                Destroy(star, star.GetComponent<Animation>()["StarGameOver"].length);
+            }
+        }
+
+        ui.showGameOverPanel(stringGm);
     }
 
     public static void restart(bool notMenu, bool isPauseMenu, bool actualRestart) {
@@ -239,10 +270,14 @@ public class GameManager : MonoBehaviour {
         }
 
         try {
-            SpecialBall sb = GameObject.FindGameObjectWithTag("SpecialBall").GetComponent<SpecialBall>();
-            if(sb.expanded) {
-                sb.shrink();
+            GameObject sb = GameObject.FindGameObjectWithTag("SpecialBall");
+            if(sb.GetComponent<SpecialBall>().expanded) {
+                sb.GetComponent<SpecialBall>().shrink();
+            } else if(sb.GetComponent<SpecialBall>().expanding) {
+                Destroy(sb);
             } else {
+                sb.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Kinematic;
+                sb.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
                 sb.GetComponent<Animation>().Play("GameOver");
                 Destroy(sb, sb.GetComponent<Animation>().GetClip("GameOver").length);
             }
@@ -274,6 +309,8 @@ public class GameManager : MonoBehaviour {
         ui.showPauseButton();
         gamemode = gm;
         gameOver = false;
+        ui.updateLives(3);
+        ui.updateScore(0);
     }
 
     public static void goToMenu(bool isPause) {
@@ -294,23 +331,18 @@ public class GameManager : MonoBehaviour {
             }
             balls[i].GetComponent<Rigidbody2D>().velocity = Vector2.zero;
         }
-        try {
-            
-            GameObject sb = GameObject.FindGameObjectWithTag("SpecialBall");
-            if(sb != null) {
-                print("NOT NULL");
-                sb.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Kinematic;
-                sbVelocity = sb.GetComponent<Rigidbody2D>().velocity;
-                sb.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+        GameObject sb = GameObject.FindGameObjectWithTag("SpecialBall");
+        if(sb != null) {
+            sb.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Kinematic;
+            sbVelocity = sb.GetComponent<Rigidbody2D>().velocity;
+            sb.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+        }
+        GameObject[] stars = GameObject.FindGameObjectsWithTag("Star");
+        if(stars.Length != 0){
+            foreach(GameObject star in stars){
+                star.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Kinematic;
+                star.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
             }
-            GameObject[] stars = GameObject.FindGameObjectsWithTag("Star");
-            if(stars.Length != 0){
-                foreach(GameObject star in stars){
-                    star.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Kinematic;
-                    star.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
-                }
-            }
-            }catch(System.Exception){
         }
     }
 

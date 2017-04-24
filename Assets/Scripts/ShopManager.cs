@@ -10,17 +10,20 @@ public class ShopManager : MonoBehaviour {
     public Button[] buttons;
     public Sprite[] skins;
     public GameObject platform;
-    int numOfItems = 8;
+    int numOfItems = 7;
     bool[] unlocked;
     Color lockedColor = Color.gray;
     Color unlockedColor = Color.blue;
     Color activeColor= Color.yellow;
-    int price = 00;
+    int price = 50;
 
 	void Start () {
+        if(!PlayerPrefs.HasKey("ActiveSkin")) {
+            PlayerPrefs.SetInt("ActiveSkin", 0);
+        }
         if(!PlayerPrefs.HasKey("unlocked")){
+            unlocked = new bool[numOfItems];
             for(int i = 0; i < numOfItems; i++){
-                unlocked = new bool[numOfItems];
                 unlocked[i] = false;
             }
             unlocked[0] = true;
@@ -70,10 +73,10 @@ public class ShopManager : MonoBehaviour {
         unlocked[index] = true;
         PlayerPrefsX.SetBoolArray("unlocked", unlocked);
         PlayerPrefs.SetInt("Stars", PlayerPrefs.GetInt("Stars") - price);
+        hidePrice(index);
         setActiveSkin(index);
         PlayerPrefs.Save();
         buttons[index].GetComponent<Image>().color = unlockedColor;
-        hidePrice(index);
         setShopPicture(index);
     }
 
@@ -84,6 +87,20 @@ public class ShopManager : MonoBehaviour {
         PlayerPrefs.SetInt("ActiveSkin", index);
         PlayerPrefs.Save();
         platform.GetComponent<SpriteRenderer>().sprite = skins[index];
+        platform.GetComponent<Platform>().setDrawMode(index);
+        foreach(Transform child in buttons[index].transform) {
+            if(child.CompareTag("PriceText")) {
+                child.gameObject.GetComponent<Text>().text = "Selected";
+            }
+        }
+        if(oldActive != index) {
+            foreach(Transform child in buttons[oldActive].transform) {
+                if(child.CompareTag("PriceText")) {
+                    child.gameObject.GetComponent<Text>().text = "Unlocked";
+                }
+            }
+        }
+
     }
 
     public void shopOut(){
@@ -100,6 +117,27 @@ public class ShopManager : MonoBehaviour {
             if(child.CompareTag("SkinPreview")) {
                 child.gameObject.GetComponent<Image>().sprite = skins[index];
                 child.gameObject.GetComponent<Image>().transform.localScale = Vector2.one;
+
+                switch(index) {
+                    case 0:
+                        child.gameObject.GetComponent<Image>().type = Image.Type.Simple;
+                        break;
+                    case 1:
+                    case 3:
+                    case 5:
+                    case 6:
+                        child.gameObject.GetComponent<Image>().type = Image.Type.Sliced;
+                        break;
+                    case 2:
+                    case 4:
+                        child.gameObject.GetComponent<Image>().type = Image.Type.Tiled;
+                        break;
+                    default:
+                        child.gameObject.GetComponent<Image>().type = Image.Type.Simple;
+                        break;
+                }
+
+                
                 child.gameObject.GetComponent<Image>().rectTransform.sizeDelta = new Vector2(185, 100);
             }
         }
@@ -107,8 +145,12 @@ public class ShopManager : MonoBehaviour {
 
     void hidePrice(int index){
         foreach(Transform child in buttons[index].transform) {
-            if(child.CompareTag("Price")) {
-                child.gameObject.SetActive(false);
+            if(child.CompareTag("PriceText")) {
+                child.gameObject.GetComponent<Text>().text = "Unlocked";
+            } else if(child.CompareTag("PriceStar")) {
+                Color temp = child.gameObject.GetComponent<Image>().color;
+                temp.a = 0F;
+                child.gameObject.GetComponent<Image>().color = temp;
             }
         }
     }

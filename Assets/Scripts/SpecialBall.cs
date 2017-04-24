@@ -7,9 +7,9 @@ public class SpecialBall : MonoBehaviour {
     Camera cam;
     public bool active = false;
     float timer = 0.0F;
-    Color color;
     public Sprite plainSprite;
     public bool expanded = false;
+    public bool expanding = false;
 
     enum BallType { Reverse, BallShrink, PlatformExpand, Strobe, Slow };
     //    enum BallType {Reverse = Color.red, BallShrink = Color.blue , PlatformExpand = Color.yellow, Strobe = Color.gray};
@@ -29,8 +29,7 @@ public class SpecialBall : MonoBehaviour {
 
         GetComponent<Rigidbody2D>().AddForce(new Vector2(Random.Range(-200, 200), 0));
         GetComponent<Animation>()["SpecialBallMystery"].time = Random.Range(0, GetComponent<Animation>()["SpecialBallMystery"].length);
-        //GetComponent<Animation>().Play("SpecialBallMystery");
-        type = BallType.PlatformExpand;
+        GetComponent<Animation>().Play("SpecialBallMystery");
     }
 
     // Update is called once per frame
@@ -52,6 +51,14 @@ public class SpecialBall : MonoBehaviour {
             if(timer > 10) {
 
                 shrink();
+            }
+        }
+
+        if(GameManager.gameOver) {
+            if(active) {
+                shrink();
+            }else {
+                Destroy(gameObject);
             }
         }
     }
@@ -83,6 +90,7 @@ public class SpecialBall : MonoBehaviour {
     }
 
     void grow() {
+        expanding = true;
         if(type != BallType.Strobe) {
             GetComponent<SpriteRenderer>().sortingOrder = -100;
         } else {
@@ -116,6 +124,7 @@ public class SpecialBall : MonoBehaviour {
                 Time.fixedDeltaTime = Time.timeScale * 0.02F;
                 break;
         }
+        expanding = false;
         expanded = true;
         active = true;
         GameManager.ui.startSpecialBallTimer();
