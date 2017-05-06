@@ -15,9 +15,10 @@ public class UIManager {// : MonoBehaviour {
     float sbTimer;
     Text starsLabel;
     GameObject shopPanel;
+    GameObject tutorial;
     // Use this for initialization
 
-    public UIManager(Text sL, Text lL, GameObject p, GameObject i, GameObject tp, GameObject pp, Button pb, GameObject tip, Text stL, GameObject sp) {
+    public UIManager(Text sL, Text lL, GameObject p, GameObject i, GameObject tp, GameObject pp, Button pb, GameObject tip, Text stL, GameObject sp, GameObject tu) {
         scoreLabel = sL;
         livesLabel = lL;
         panel = p;
@@ -28,6 +29,7 @@ public class UIManager {// : MonoBehaviour {
         timerPanel = tip;
         starsLabel = stL;
         shopPanel = sp;
+        tutorial = tu;
     }
 
     public void updateLives(int lives) {
@@ -165,13 +167,24 @@ public class UIManager {// : MonoBehaviour {
     public void showStarsLabel(){
         starsLabel.GetComponentInParent<Animation>()["StarLabelIn"].speed = 1;
         starsLabel.GetComponentInParent<Animation>()["StarLabelIn"].time = 0.0F;
-        starsLabel.GetComponent<Animation>().Play("StarLabelIn");
+        starsLabel.GetComponentInParent<Animation>().Play("StarLabelIn");
     }
 
     public void hideStarsLabel(){
         starsLabel.GetComponentInParent<Animation>()["StarLabelIn"].speed = -1;
-        starsLabel.GetComponentInParent<Animation>()["StarLabelIn"].time = starsLabel.GetComponent<Animation>()["StarLabelIn"].length;
-        starsLabel.GetComponent<Animation>().Play("StarLabelIn");
+        starsLabel.GetComponentInParent<Animation>()["StarLabelIn"].time = starsLabel.GetComponentInParent<Animation>()["StarLabelIn"].length;
+        starsLabel.GetComponentInParent<Animation>().Play("StarLabelIn");
     }
 
+    public void tutorialOut(){
+        tutorial.GetComponent<Animation>()["TutorialIn"].speed = 1;
+        tutorial.GetComponent<Animation>()["TutorialIn"].time = 0;
+        tutorial.GetComponent<Animation>().Play("TutorialIn");
+    }
+
+    public void tutorialIn(){
+        tutorial.GetComponent<Animation>()["TutorialIn"].speed = -1;
+        tutorial.GetComponent<Animation>()["TutorialIn"].time = tutorial.GetComponent<Animation>()["TutorialIn"].length;
+        tutorial.GetComponent<Animation>().Play("TutorialIn");
+    }
 }

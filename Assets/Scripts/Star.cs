@@ -6,7 +6,7 @@ public class Star : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		
+        print("STAR SPAWNED");
 	}
 	
 	// Update is called once per frame

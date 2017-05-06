@@ -19,7 +19,7 @@ public class GameManager : MonoBehaviour {
     public static int lives = 3;
     static int level = 1;
     static float ballTimerTrigger = 1.0f;
-    public static bool spawnSpecial = true;
+    public static bool spawnSpecial = false;
     double specialFreq = 0.995f;
     static bool shrinkBall = false;
     public static UIManager ui;
@@ -40,11 +40,12 @@ public class GameManager : MonoBehaviour {
     float starFreq = 0.997F;
     public Text starsLabel;
     public GameObject shopPanel;
+    public GameObject tutorial;
     //    public b
     // Use this for initialization
     void Start() {
 
-
+        PlayerPrefs.DeleteAll();
         if(!PlayerPrefs.HasKey("Stars"))
             PlayerPrefs.SetInt("Stars", 0);
 
@@ -57,9 +58,12 @@ public class GameManager : MonoBehaviour {
         if(!PlayerPrefs.HasKey("LivesHighScore"))
             PlayerPrefs.SetInt("LivesHighScore", 0);
 
+        if(!PlayerPrefs.HasKey("ShowTutorial"))
+            PlayerPrefsX.SetBool("ShowTutorial", true);
+
         PlayerPrefs.Save();
 
-        ui = new UIManager(scoreLabel, livesLabel, panel, lostBallX, titlePanel, pausePanel, pauseButton, timerPanel, starsLabel, shopPanel);
+        ui = new UIManager(scoreLabel, livesLabel, panel, lostBallX, titlePanel, pausePanel, pauseButton, timerPanel, starsLabel, shopPanel, tutorial);
         Application.targetFrameRate = 60;
 
         //Level setup
@@ -83,6 +87,10 @@ public class GameManager : MonoBehaviour {
                                              Quaternion.identity) as GameObject;
         fallTrigger.transform.localScale = new Vector2(Camera.main.orthographicSize * 2 * Screen.width / Screen.height,
                                                        1);
+
+        if(PlayerPrefsX.GetBool("ShowTutorial")){
+            showTutorial();
+        }
     }
 
     // Update is called once per frame
@@ -103,7 +111,7 @@ public class GameManager : MonoBehaviour {
 
                     if(Random.Range(0.0F, 1.0F) > starFreq){
                         Star instStar = Instantiate(star, new Vector2(Random.Range(-3, 3), ballDropPoint.y), Quaternion.identity);
-                        instStar.GetComponent<Rigidbody2D>().AddTorque(Random.Range(-360.0F, 360.0F));
+                        instStar.GetComponent<Rigidbody2D>().AddTorque(Random.Range(-5.0F, 5.0F));
                     }
 
                     if(levelTimer > 0.4) {
@@ -202,6 +210,9 @@ public class GameManager : MonoBehaviour {
 
     public static void bouncedBall() {
         score += 1;
+        if(score == 25){
+            spawnSpecial = true;
+        }
         readyToSpawn = true;
         ui.updateScore(score);
     }
@@ -259,6 +270,7 @@ public class GameManager : MonoBehaviour {
     public static void restart(bool notMenu, bool isPauseMenu, bool actualRestart) {
         print("hereee" + isPauseMenu);
         ui.restart(isPauseMenu, actualRestart);
+        spawnSpecial = false;
         if(isPauseMenu)
             play(actualRestart);
         ballTimerTrigger = 1.0F;
@@ -381,5 +393,15 @@ public class GameManager : MonoBehaviour {
     public static void showShop(){
         ui.fadeOutTitle(false);
         ui.showShop();
+    }
+
+    public static void showTutorial(){
+        ui.tutorialIn();
+        PlayerPrefsX.SetBool("ShowTutorial", false);
+    }
+
+    public static void tutorialEnd(){
+        ui.tutorialOut();
+
     }
 }

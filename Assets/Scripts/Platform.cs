@@ -19,18 +19,20 @@ public class Platform : MonoBehaviour {
     // Update is called once per frame
     void Update() {
 
-        if(Input.touchCount > 0) {
-        Vector2 touchPos = Input.GetTouch(0).position;
-            if(isReversed) {
-                touchPos.x = Screen.width - Input.GetTouch(0).position.x;
-            }
-            Vector3 worldPoint = Camera.main.ScreenToWorldPoint(touchPos);
+        if(!GameManager.isPaused){
 
-            worldPoint.z = transform.position.z;
-            worldPoint.y = transform.position.y;
-            rb.MovePosition(new Vector2(transform.position.x - (transform.position.x - worldPoint.x) / sensitivity, transform.position.y));
+            //if(Input.touchCount > 0) {
+            Vector2 touchPos = Input.mousePosition;//Input.GetTouch(0).position;
+                if(isReversed) {
+                touchPos.x = Screen.width - Input.mousePosition.x;//Input.GetTouch(0).position.x;
+                }
+                Vector3 worldPoint = Camera.main.ScreenToWorldPoint(touchPos);
+            
+                worldPoint.z = transform.position.z;
+                worldPoint.y = transform.position.y;
+                rb.MovePosition(new Vector2(transform.position.x - (transform.position.x - worldPoint.x) / sensitivity, transform.position.y));
+            //}
         }
-
         if(expand) {
             expandPlatform();
             platformIsExpanded = true;

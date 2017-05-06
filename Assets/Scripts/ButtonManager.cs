@@ -34,7 +34,7 @@ public class ButtonManager : MonoBehaviour {
         GameManager.ui.hidePauseMenu(false);
         if(GameManager.isPaused) {
             GameManager.ui.showPauseButton();
-            Time.timeScale = 1.0F;
+            //Time.timeScale = 1.0F;
             GameManager.play(false);
         } else {
             GameManager.pause();
@@ -53,5 +53,13 @@ public class ButtonManager : MonoBehaviour {
 
     public void shop(){
         GameManager.showShop();
+    }
+
+    public void tutorialStart(){
+        GameManager.showTutorial();
+    }
+
+    public void tutorialEnd(){
+        GameManager.tutorialEnd();
     }
 }
