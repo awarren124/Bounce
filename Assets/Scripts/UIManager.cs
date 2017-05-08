@@ -187,4 +187,8 @@ public class UIManager {// : MonoBehaviour {
         tutorial.GetComponent<Animation>()["TutorialIn"].time = tutorial.GetComponent<Animation>()["TutorialIn"].length;
         tutorial.GetComponent<Animation>().Play("TutorialIn");
     }
+
+    public void resetTutorialPosition() {
+        tutorial.GetComponentInChildren<Scrollbar>().value = 0;
+    }
 }

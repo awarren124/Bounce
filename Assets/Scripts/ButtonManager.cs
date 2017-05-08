@@ -62,4 +62,8 @@ public class ButtonManager : MonoBehaviour {
     public void tutorialEnd(){
         GameManager.tutorialEnd();
     }
+
+    public void tutorialReset() {
+        GameManager.ui.resetTutorialPosition();
+    }
 }

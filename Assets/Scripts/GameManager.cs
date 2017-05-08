@@ -41,11 +41,12 @@ public class GameManager : MonoBehaviour {
     public Text starsLabel;
     public GameObject shopPanel;
     public GameObject tutorial;
+    public GameObject camera;
     //    public b
     // Use this for initialization
     void Start() {
+        camera.GetComponent<Animation>().Play();
 
-        PlayerPrefs.DeleteAll();
         if(!PlayerPrefs.HasKey("Stars"))
             PlayerPrefs.SetInt("Stars", 0);
 
@@ -360,6 +361,7 @@ public class GameManager : MonoBehaviour {
 
     public static void play(bool isPauseRestart) {
         isPaused = false;
+        updateUiSBTimer = false;
         //if(ui.pauseInFrame)
         //ui.hidePauseMenu(isPauseRestart);
         if(isPauseRestart) {

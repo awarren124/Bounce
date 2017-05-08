@@ -12,9 +12,9 @@ public class ShopManager : MonoBehaviour {
     public GameObject platform;
     int numOfItems = 7;
     bool[] unlocked;
-    Color lockedColor = Color.gray;
-    Color unlockedColor = Color.blue;
-    Color activeColor= Color.yellow;
+    public Color lockedColor;
+    public Color unlockedColor;
+    public Color activeColor;
     int price = 50;
 
 	void Start () {
@@ -116,7 +116,7 @@ public class ShopManager : MonoBehaviour {
         foreach(Transform child in buttons[index].transform) {
             if(child.CompareTag("SkinPreview")) {
                 child.gameObject.GetComponent<Image>().sprite = skins[index];
-                child.gameObject.GetComponent<Image>().transform.localScale = Vector2.one;
+                child.gameObject.GetComponent<Image>().transform.localScale = Vector3.one;
 
                 switch(index) {
                     case 0:
