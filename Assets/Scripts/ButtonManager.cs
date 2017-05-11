@@ -66,4 +66,14 @@ public class ButtonManager : MonoBehaviour {
     public void tutorialReset() {
         GameManager.ui.resetTutorialPosition();
     }
+
+    public void endGameOverPanelIn() {
+        if(GameManager.gameOver) {
+            GameManager.showAd();
+        }
+    }
+
+    public void showRewardAd() {
+        GameManager.showRewardAd();
+    }
 }

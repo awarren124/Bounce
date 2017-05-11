@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.Advertisements;
 using System.Collections;
 
 public class GameManager : MonoBehaviour {
@@ -219,6 +220,11 @@ public class GameManager : MonoBehaviour {
     }
 
     public void startGameOver() {
+
+        if(Random.RandomRange(0, 3) <= 1) {
+            showAd();
+        }
+
         gameOver = true;
         string stringGm = "";
         if(gamemode == GameMode.Lives) {
@@ -405,5 +411,33 @@ public class GameManager : MonoBehaviour {
     public static void tutorialEnd(){
         ui.tutorialOut();
 
+    }
+
+    public static void showAd() {
+        if(Advertisement.IsReady()) {
+            Advertisement.Show();
+        }
+    }
+
+    public static void showRewardAd() {
+        if(Advertisement.IsReady("rewardedVideo")) {
+            var options = new ShowOptions { resultCallback = handleShowResult };
+            Advertisement.Show("rewardedVideo", options);
+        }
+    }
+
+    private static void handleShowResult(ShowResult result) {
+        switch(result) {
+            case ShowResult.Finished:
+                Debug.Log("The ad was successfully shown.");
+                PlayerPrefs.SetInt("Stars", PlayerPrefs.GetInt("Stars") + 20);
+                break;
+            case ShowResult.Skipped:
+                Debug.Log("The ad was skipped before reaching the end.");
+                break;
+            case ShowResult.Failed:
+                Debug.LogError("The ad failed to be shown.");
+                break;
+        }
     }
 }
