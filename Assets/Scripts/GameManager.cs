@@ -43,6 +43,7 @@ public class GameManager : MonoBehaviour {
     public GameObject shopPanel;
     public GameObject tutorial;
     public GameObject camera;
+    public static int adCounter = 0;
     //    public b
     // Use this for initialization
     void Start() {
@@ -220,10 +221,7 @@ public class GameManager : MonoBehaviour {
     }
 
     public void startGameOver() {
-
-        if(Random.RandomRange(0, 3) <= 1) {
-            showAd();
-        }
+        adCounter++;
 
         gameOver = true;
         string stringGm = "";

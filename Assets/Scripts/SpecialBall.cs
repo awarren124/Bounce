@@ -7,6 +7,7 @@ public class SpecialBall : MonoBehaviour {
     Camera cam;
     public bool active = false;
     float timer = 0.0F;
+    float timeThreshold;
     public Sprite plainSprite;
     public bool expanded = false;
     public bool expanding = false;
@@ -48,7 +49,7 @@ public class SpecialBall : MonoBehaviour {
                 color.a = alpha;
                 GetComponent<SpriteRenderer>().material.color = color;
             }
-            if(timer > 10) {
+            if(timer > timeThreshold) {
 
                 shrink();
             }
@@ -124,10 +125,11 @@ public class SpecialBall : MonoBehaviour {
                 Time.fixedDeltaTime = Time.timeScale * 0.02F;
                 break;
         }
+        timeThreshold = 10.0F * Time.timeScale;
         expanding = false;
         expanded = true;
         active = true;
-        GameManager.ui.startSpecialBallTimer();
+        GameManager.ui.startSpecialBallTimer(timeThreshold);
     }
 
     public void shrink() {

@@ -16,6 +16,7 @@ public class UIManager {// : MonoBehaviour {
     Text starsLabel;
     GameObject shopPanel;
     GameObject tutorial;
+    float sbTimerThresh;
     // Use this for initialization
 
     public UIManager(Text sL, Text lL, GameObject p, GameObject i, GameObject tp, GameObject pp, Button pb, GameObject tip, Text stL, GameObject sp, GameObject tu) {
@@ -139,20 +140,21 @@ public class UIManager {// : MonoBehaviour {
         pauseButton.GetComponentInParent<Animation>().Play("PauseIn");
     }
 
-    public void startSpecialBallTimer(){
+    public void startSpecialBallTimer(float thresh){
         sbTimer = 0.0F;
+        sbTimerThresh = thresh;
         GameManager.updateUiSBTimer = true;
     }
 
     public void updateSpecialBallTimer(float deltaTime){
         //if(Time.time - sbInitialTime >= 10.0F){
         sbTimer += deltaTime;
-        if(sbTimer >= 10.0F){
+        if(sbTimer >= sbTimerThresh){
             GameManager.updateUiSBTimer = false;
             timerPanel.GetComponent<RectTransform>().sizeDelta = Vector2.zero;
             return;
         }
-        timerPanel.GetComponent<RectTransform>().sizeDelta = new Vector2(50, Screen.height - (sbTimer / 10.0F) * Screen.height);
+        timerPanel.GetComponent<RectTransform>().sizeDelta = new Vector2(50, Screen.height - (sbTimer / sbTimerThresh) * Screen.height);
     }
 
     public void updateStarsLabel(){

@@ -69,7 +69,11 @@ public class ButtonManager : MonoBehaviour {
 
     public void endGameOverPanelIn() {
         if(GameManager.gameOver) {
-            GameManager.showAd();
+            if(GameManager.adCounter >= 5) {
+                GameManager.adCounter = 0;
+                GameManager.showAd();
+            }
+
         }
     }
 
