@@ -44,6 +44,7 @@ public class GameManager : MonoBehaviour {
     public GameObject tutorial;
     public GameObject camera;
     public static int adCounter = 0;
+    public GameObject otherButtons;
     //    public b
     // Use this for initialization
     void Start() {
@@ -66,7 +67,7 @@ public class GameManager : MonoBehaviour {
 
         PlayerPrefs.Save();
 
-        ui = new UIManager(scoreLabel, livesLabel, panel, lostBallX, titlePanel, pausePanel, pauseButton, timerPanel, starsLabel, shopPanel, tutorial);
+        ui = new UIManager(scoreLabel, livesLabel, panel, lostBallX, titlePanel, pausePanel, pauseButton, timerPanel, starsLabel, shopPanel, tutorial, otherButtons);
         Application.targetFrameRate = 60;
 
         //Level setup
@@ -437,5 +438,13 @@ public class GameManager : MonoBehaviour {
                 Debug.LogError("The ad failed to be shown.");
                 break;
         }
+    }
+
+    public static void rate(){
+        #if UNITY_IPHONE
+        Application.OpenURL("itms-apps://itunes.apple.com/app/idXXXXXXXX");
+        #elif UNITY_ANDROID
+        Application.OpenURL("market://details?id=XXXXXXXX");
+        #endif
     }
 }

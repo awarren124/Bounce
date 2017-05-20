@@ -17,9 +17,10 @@ public class UIManager {// : MonoBehaviour {
     GameObject shopPanel;
     GameObject tutorial;
     float sbTimerThresh;
+    GameObject otherButtons;
     // Use this for initialization
 
-    public UIManager(Text sL, Text lL, GameObject p, GameObject i, GameObject tp, GameObject pp, Button pb, GameObject tip, Text stL, GameObject sp, GameObject tu) {
+    public UIManager(Text sL, Text lL, GameObject p, GameObject i, GameObject tp, GameObject pp, Button pb, GameObject tip, Text stL, GameObject sp, GameObject tu, GameObject ob) {
         scoreLabel = sL;
         livesLabel = lL;
         panel = p;
@@ -31,6 +32,7 @@ public class UIManager {// : MonoBehaviour {
         starsLabel = stL;
         shopPanel = sp;
         tutorial = tu;
+        otherButtons = ob;
     }
 
     public void updateLives(int lives) {
@@ -81,7 +83,9 @@ public class UIManager {// : MonoBehaviour {
         titlePanel.GetComponent<Animation>()["TitleOut"].speed = 1;
         titlePanel.GetComponent<Animation>()["TitleOut"].time = 0;
         titlePanel.GetComponent<Animation>().Play("TitleOut");
-
+        otherButtons.GetComponent<Animation>()["OtherButtonsOut"].speed = 1;
+        otherButtons.GetComponent<Animation>()["OtherButtonsOut"].time = 0;
+        otherButtons.GetComponent<Animation>().Play("OtherButtonsOut");
         if(showLabelsAndButton) {
             scoreLabel.GetComponentInParent<Animation>()["LabelsIn"].speed = 1;
             scoreLabel.GetComponentInParent<Animation>()["LabelsIn"].time = 0;
@@ -95,7 +99,9 @@ public class UIManager {// : MonoBehaviour {
         titlePanel.GetComponent<Animation>()["TitleOut"].speed = -1;
         titlePanel.GetComponent<Animation>()["TitleOut"].time = titlePanel.GetComponent<Animation>()["TitleOut"].length;
         titlePanel.GetComponent<Animation>().Play("TitleOut");
-
+        otherButtons.GetComponent<Animation>()["OtherButtonsOut"].speed = -1;
+        otherButtons.GetComponent<Animation>()["OtherButtonsOut"].time = otherButtons.GetComponent<Animation>()["OtherButtonsOut"].length;
+        otherButtons.GetComponent<Animation>().Play("OtherButtonsOut");
         if(labels) {
             scoreLabel.GetComponentInParent<Animation>()["LabelsIn"].speed = -1;
             scoreLabel.GetComponentInParent<Animation>()["LabelsIn"].time = scoreLabel.GetComponentInParent<Animation>()["LabelsIn"].length;
@@ -179,15 +185,21 @@ public class UIManager {// : MonoBehaviour {
     }
 
     public void tutorialOut(){
-        tutorial.GetComponent<Animation>()["TutorialIn"].speed = 1;
-        tutorial.GetComponent<Animation>()["TutorialIn"].time = 0;
-        tutorial.GetComponent<Animation>().Play("TutorialIn");
-    }
-
-    public void tutorialIn(){
         tutorial.GetComponent<Animation>()["TutorialIn"].speed = -1;
         tutorial.GetComponent<Animation>()["TutorialIn"].time = tutorial.GetComponent<Animation>()["TutorialIn"].length;
         tutorial.GetComponent<Animation>().Play("TutorialIn");
+        otherButtons.GetComponent<Animation>()["OtherButtonsOut"].speed = -1;
+        otherButtons.GetComponent<Animation>()["OtherButtonsOut"].time = otherButtons.GetComponent<Animation>()["OtherButtonsOut"].length;
+        otherButtons.GetComponent<Animation>().Play("OtherButtonsOut");
+    }
+
+    public void tutorialIn(){
+        tutorial.GetComponent<Animation>()["TutorialIn"].speed = 1;
+        tutorial.GetComponent<Animation>()["TutorialIn"].time = 0;
+        tutorial.GetComponent<Animation>().Play("TutorialIn");
+        otherButtons.GetComponent<Animation>()["OtherButtonsOut"].speed = 1;
+        otherButtons.GetComponent<Animation>()["OtherButtonsOut"].time = 0;
+        otherButtons.GetComponent<Animation>().Play("OtherButtonsOut");
     }
 
     public void resetTutorialPosition() {

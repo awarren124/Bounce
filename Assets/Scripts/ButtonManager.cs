@@ -80,4 +80,8 @@ public class ButtonManager : MonoBehaviour {
     public void showRewardAd() {
         GameManager.showRewardAd();
     }
+
+    public void rate(){
+        GameManager.rate();
+    }
 }
