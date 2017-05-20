@@ -43,13 +43,15 @@ public class GameManager : MonoBehaviour {
     public GameObject shopPanel;
     public GameObject tutorial;
     public GameObject camera;
-    public static int adCounter = 0;
     public GameObject otherButtons;
     public GameObject credits;
     //    public b
     // Use this for initialization
     void Start() {
         camera.GetComponent<Animation>().Play();
+
+        if(!PlayerPrefs.HasKey("AdCounter"))
+            PlayerPrefs.SetInt("AdCounter", 0);
 
         if(!PlayerPrefs.HasKey("Stars"))
             PlayerPrefs.SetInt("Stars", 0);
@@ -223,8 +225,7 @@ public class GameManager : MonoBehaviour {
     }
 
     public void startGameOver() {
-        adCounter++;
-
+        PlayerPrefs.SetInt("AdCounter", PlayerPrefs.GetInt("AdCounter") + 1);
         gameOver = true;
         string stringGm = "";
         if(gamemode == GameMode.Lives) {
