@@ -18,9 +18,10 @@ public class UIManager {// : MonoBehaviour {
     GameObject tutorial;
     float sbTimerThresh;
     GameObject otherButtons;
+    GameObject creditsPanel;
     // Use this for initialization
 
-    public UIManager(Text sL, Text lL, GameObject p, GameObject i, GameObject tp, GameObject pp, Button pb, GameObject tip, Text stL, GameObject sp, GameObject tu, GameObject ob) {
+    public UIManager(Text sL, Text lL, GameObject p, GameObject i, GameObject tp, GameObject pp, Button pb, GameObject tip, Text stL, GameObject sp, GameObject tu, GameObject ob, GameObject cp) {
         scoreLabel = sL;
         livesLabel = lL;
         panel = p;
@@ -33,6 +34,7 @@ public class UIManager {// : MonoBehaviour {
         shopPanel = sp;
         tutorial = tu;
         otherButtons = ob;
+        creditsPanel = cp;
     }
 
     public void updateLives(int lives) {
@@ -204,5 +206,24 @@ public class UIManager {// : MonoBehaviour {
 
     public void resetTutorialPosition() {
         tutorial.GetComponentInChildren<Scrollbar>().value = 0;
+    }
+
+    public void showCredits() {
+        creditsPanel.GetComponentInParent<Animation>()["CreditsIn"].speed = 1;
+        creditsPanel.GetComponentInParent<Animation>()["CreditsIn"].time = 0.0F;
+        creditsPanel.GetComponentInParent<Animation>().Play("CreditsIn");
+        otherButtons.GetComponent<Animation>()["OtherButtonsOut"].speed = 1;
+        otherButtons.GetComponent<Animation>()["OtherButtonsOut"].time = 0;
+        otherButtons.GetComponent<Animation>().Play("OtherButtonsOut");
+    }
+
+    public void hideCredits() {
+        creditsPanel.GetComponentInParent<Animation>()["CreditsIn"].speed = -1;
+        creditsPanel.GetComponentInParent<Animation>()["CreditsIn"].time = creditsPanel.GetComponentInParent<Animation>()["CreditsIn"].length;
+        creditsPanel.GetComponentInParent<Animation>().Play("CreditsIn");
+        otherButtons.GetComponent<Animation>()["OtherButtonsOut"].speed = -1;
+        otherButtons.GetComponent<Animation>()["OtherButtonsOut"].time = otherButtons.GetComponent<Animation>()["OtherButtonsOut"].length;
+        otherButtons.GetComponent<Animation>().Play("OtherButtonsOut");
+
     }
 }

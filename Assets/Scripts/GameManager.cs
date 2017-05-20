@@ -45,6 +45,7 @@ public class GameManager : MonoBehaviour {
     public GameObject camera;
     public static int adCounter = 0;
     public GameObject otherButtons;
+    public GameObject credits;
     //    public b
     // Use this for initialization
     void Start() {
@@ -67,7 +68,7 @@ public class GameManager : MonoBehaviour {
 
         PlayerPrefs.Save();
 
-        ui = new UIManager(scoreLabel, livesLabel, panel, lostBallX, titlePanel, pausePanel, pauseButton, timerPanel, starsLabel, shopPanel, tutorial, otherButtons);
+        ui = new UIManager(scoreLabel, livesLabel, panel, lostBallX, titlePanel, pausePanel, pauseButton, timerPanel, starsLabel, shopPanel, tutorial, otherButtons, credits);
         Application.targetFrameRate = 60;
 
         //Level setup
@@ -446,5 +447,13 @@ public class GameManager : MonoBehaviour {
         #elif UNITY_ANDROID
         Application.OpenURL("market://details?id=XXXXXXXX");
         #endif
+    }
+
+    public static void showCredits() {
+        ui.showCredits();
+    }
+
+    public static void hideCredits() {
+        ui.hideCredits();
     }
 }

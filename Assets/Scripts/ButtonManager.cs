@@ -84,4 +84,12 @@ public class ButtonManager : MonoBehaviour {
     public void rate(){
         GameManager.rate();
     }
+
+    public void credits() {
+        GameManager.showCredits();
+    }
+
+    public void creditsDone() {
+        GameManager.hideCredits();
+    }
 }
