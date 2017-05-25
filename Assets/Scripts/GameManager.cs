@@ -45,6 +45,7 @@ public class GameManager : MonoBehaviour {
     public GameObject camera;
     public GameObject otherButtons;
     public GameObject credits;
+    int i = 0;
     //    public b
     // Use this for initialization
     void Start() {
@@ -95,7 +96,7 @@ public class GameManager : MonoBehaviour {
         fallTrigger.transform.localScale = new Vector2(Camera.main.orthographicSize * 2 * Screen.width / Screen.height,
                                                        1);
 
-        if(PlayerPrefsX.GetBool("ShowTutorial")){
+        if(PlayerPrefsX.GetBool("ShowTutorial")) {
             showTutorial();
         }
     }
@@ -116,7 +117,7 @@ public class GameManager : MonoBehaviour {
                         spawnSpecial = false;
                     }
 
-                    if(Random.Range(0.0F, 1.0F) > starFreq){
+                    if(Random.Range(0.0F, 1.0F) > starFreq) {
                         Star instStar = Instantiate(star, new Vector2(Random.Range(-3, 3), ballDropPoint.y), Quaternion.identity);
                         instStar.GetComponent<Rigidbody2D>().AddTorque(Random.Range(-5.0F, 5.0F));
                     }
@@ -155,7 +156,7 @@ public class GameManager : MonoBehaviour {
                         levelTimer = 0;
                     }
 
-                    if(Random.Range(0.0F, 1.0F) > starFreq){
+                    if(Random.Range(0.0F, 1.0F) > starFreq) {
                         Star instStar = Instantiate(star, new Vector2(Random.Range(-3, 3), ballDropPoint.y), Quaternion.identity);
                         instStar.GetComponent<Rigidbody2D>().AddTorque(Random.Range(-25.0F, 25.0F));
                     }
@@ -210,14 +211,14 @@ public class GameManager : MonoBehaviour {
         ui.showLostBallX(pos);
         if(lives >= 0) {
             ui.updateLives(lives);
-        }else {
+        } else {
             ui.updateLives(0);
         }
     }
 
     public static void bouncedBall() {
         score += 1;
-        if(score == 25){
+        if(score == 25) {
             spawnSpecial = true;
         }
         readyToSpawn = true;
@@ -234,7 +235,7 @@ public class GameManager : MonoBehaviour {
                 PlayerPrefs.SetInt("LivesHighScore", score);
                 PlayerPrefs.Save();
             }
-        }else if(gamemode == GameMode.Blind) {
+        } else if(gamemode == GameMode.Blind) {
             stringGm = "BlindHighScore";
             if(score > PlayerPrefs.GetInt("BlindHighScore")) {
                 PlayerPrefs.SetInt("BlindHighScore", score);
@@ -252,7 +253,6 @@ public class GameManager : MonoBehaviour {
 
         GameObject sb = GameObject.FindGameObjectWithTag("SpecialBall");
         if(sb != null) {
-            print("NOT NULL");
             if(sb.GetComponent<SpecialBall>().expanded) {
                 sb.GetComponent<SpecialBall>().shrink();
             } else if(sb.GetComponent<SpecialBall>().expanding) {
@@ -262,7 +262,7 @@ public class GameManager : MonoBehaviour {
                 sb.gameObject.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
             }
         }
-    
+
         GameObject[] stars = GameObject.FindGameObjectsWithTag("Star");
 
         if(stars.Length != 0) {
@@ -276,7 +276,6 @@ public class GameManager : MonoBehaviour {
     }
 
     public static void restart(bool notMenu, bool isPauseMenu, bool actualRestart) {
-        print("hereee" + isPauseMenu);
         ui.restart(isPauseMenu, actualRestart);
         spawnSpecial = false;
         if(isPauseMenu)
@@ -325,7 +324,6 @@ public class GameManager : MonoBehaviour {
 
     public static void startGame(GameMode gm) {
         ui.fadeOutTitle(true);
-        Debug.Log("StartGAme");
         ui.showPauseButton();
         gamemode = gm;
         gameOver = false;
@@ -358,8 +356,8 @@ public class GameManager : MonoBehaviour {
             sb.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
         }
         GameObject[] stars = GameObject.FindGameObjectsWithTag("Star");
-        if(stars.Length != 0){
-            foreach(GameObject star in stars){
+        if(stars.Length != 0) {
+            foreach(GameObject star in stars) {
                 star.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Kinematic;
                 star.GetComponent<Rigidbody2D>().velocity = Vector2.zero;
             }
@@ -375,7 +373,7 @@ public class GameManager : MonoBehaviour {
             Debug.Log("play(" + isPauseRestart + ")");
             ui.showPauseButton();
         }
-            
+
         GameObject[] balls = GameObject.FindGameObjectsWithTag("Ball");
         for(int i = 0; i < balls.Length; i++) {
             if(!isPauseRestart) {
@@ -390,26 +388,26 @@ public class GameManager : MonoBehaviour {
                 sb.GetComponent<Rigidbody2D>().velocity = sbVelocity;
             }
             GameObject[] stars = GameObject.FindGameObjectsWithTag("Star");
-            if(stars.Length != 0){
-                foreach(GameObject star in stars){
+            if(stars.Length != 0) {
+                foreach(GameObject star in stars) {
                     star.GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Dynamic;
                 }
             }
-        }catch(System.Exception){
+        } catch(System.Exception) {
         }
     }
 
-    public static void showShop(){
+    public static void showShop() {
         ui.fadeOutTitle(false);
         ui.showShop();
     }
 
-    public static void showTutorial(){
+    public static void showTutorial() {
         ui.tutorialIn();
         PlayerPrefsX.SetBool("ShowTutorial", false);
     }
 
-    public static void tutorialEnd(){
+    public static void tutorialEnd() {
         ui.tutorialOut();
 
     }
@@ -442,12 +440,12 @@ public class GameManager : MonoBehaviour {
         }
     }
 
-    public static void rate(){
-        #if UNITY_IPHONE
+    public static void rate() {
+#if UNITY_IPHONE
         Application.OpenURL("itms-apps://itunes.apple.com/app/idXXXXXXXX");
-        #elif UNITY_ANDROID
-        Application.OpenURL("market://details?id=XXXXXXXX");
-        #endif
+#elif UNITY_ANDROID
+        Application.OpenURL("market://details?id=XXXXXXXXX");
+#endif
     }
 
     public static void showCredits() {

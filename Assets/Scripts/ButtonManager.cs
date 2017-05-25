@@ -69,7 +69,7 @@ public class ButtonManager : MonoBehaviour {
 
     public void endGameOverPanelIn() {
         if(GameManager.gameOver) {
-            if(PlayerPrefs.GetInt("AdCounter") >= 5) {
+            if(PlayerPrefs.GetInt("AdCounter") >= 4) {
                 PlayerPrefs.SetInt("AdCounter", 0);
                 GameManager.showAd();
             }
