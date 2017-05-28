@@ -18,6 +18,8 @@ public class ShopManager : MonoBehaviour {
     int price = 50;
 
 	void Start () {
+
+        //PlayerPrefs initialization
         if(!PlayerPrefs.HasKey("ActiveSkin")) {
             PlayerPrefs.SetInt("ActiveSkin", 0);
         }
@@ -33,6 +35,7 @@ public class ShopManager : MonoBehaviour {
             unlocked = PlayerPrefsX.GetBoolArray("unlocked");
         }
 
+        //Loops through shop items and formats according to whether they are unlocked or not
         for(int i = 0; i < numOfItems; i++){
             if(unlocked[i]){
                 buttons[i].GetComponent<Image>().color = unlockedColor;
@@ -46,22 +49,28 @@ public class ShopManager : MonoBehaviour {
         setActiveSkin(PlayerPrefs.GetInt("ActiveSkin"));
 	}
 	
+    //Plays animation for the shop entering
     public void shopIn(){
         GetComponent<Animation>()["ShopIn"].speed = 1;
         GetComponent<Animation>()["ShopIn"].time = 0.0F;
         GetComponent<Animation>().Play("ShopIn");
     }
 
+    //Called when an item in the shop is pressed
     public void buttonPressed(int index){
+
+        //If the item is locked, it checks it then unlocks if there is enough stars
         if(check() && !unlocked[index]){
             unlock(index);
         }
 
+        //If the item is unlocked it is set active
         if(unlocked[index]){
             setActiveSkin(index);
         }
     }
 
+    //Checks whether the user has enough stars
     bool check(){
         if(PlayerPrefs.GetInt("Stars") >= price){
             return true;
@@ -69,6 +78,7 @@ public class ShopManager : MonoBehaviour {
         return false;
     }
 
+    //Unlocks item
     void unlock(int index){
         unlocked[index] = true;
         PlayerPrefsX.SetBoolArray("unlocked", unlocked);
@@ -80,6 +90,7 @@ public class ShopManager : MonoBehaviour {
         setShopPicture(index);
     }
 
+    //Sets skin to active
     void setActiveSkin(int index){
         int oldActive = PlayerPrefs.GetInt("ActiveSkin");
         buttons[oldActive].GetComponent<Image>().color = unlockedColor;
@@ -103,6 +114,7 @@ public class ShopManager : MonoBehaviour {
 
     }
 
+    //Plays animation for the shop exiting
     public void shopOut(){
         PlayerPrefs.Save();
         GetComponent<Animation>()["ShopIn"].speed = -1;
@@ -112,6 +124,7 @@ public class ShopManager : MonoBehaviour {
         GameManager.ui.hideStarsLabel();
     }
 
+    //Sets the picture for an unlocked shop item
     void setShopPicture(int index){
         foreach(Transform child in buttons[index].transform) {
             if(child.CompareTag("SkinPreview")) {
@@ -143,6 +156,7 @@ public class ShopManager : MonoBehaviour {
         }
     }
 
+    //Hides the price of shop item
     void hidePrice(int index){
         foreach(Transform child in buttons[index].transform) {
             if(child.CompareTag("PriceText")) {

@@ -2,7 +2,7 @@
 using System.Collections;
 using UnityEngine.UI;
 
-public class UIManager {// : MonoBehaviour {
+public class UIManager {
     Text scoreLabel;
     Text livesLabel;
     GameObject panel;
@@ -19,8 +19,8 @@ public class UIManager {// : MonoBehaviour {
     float sbTimerThresh;
     GameObject otherButtons;
     GameObject creditsPanel;
-    // Use this for initialization
 
+    //Constructor where values are assigned
     public UIManager(Text sL, Text lL, GameObject p, GameObject i, GameObject tp, GameObject pp, Button pb, GameObject tip, Text stL, GameObject sp, GameObject tu, GameObject ob, GameObject cp) {
         scoreLabel = sL;
         livesLabel = lL;
@@ -69,10 +69,8 @@ public class UIManager {// : MonoBehaviour {
             showPauseButton();
         }
 
-//        if(!isPauseMenu) {
-            GameManager.updateUiSBTimer = false;
-            timerPanel.GetComponent<RectTransform>().sizeDelta = Vector2.zero;
-//        }
+        GameManager.updateUiSBTimer = false;
+        timerPanel.GetComponent<RectTransform>().sizeDelta = Vector2.zero;
     }
 
     public void showLostBallX(Vector2 pos) {
@@ -155,7 +153,6 @@ public class UIManager {// : MonoBehaviour {
     }
 
     public void updateSpecialBallTimer(float deltaTime){
-        //if(Time.time - sbInitialTime >= 10.0F){
         sbTimer += deltaTime;
         if(sbTimer >= sbTimerThresh){
             GameManager.updateUiSBTimer = false;

@@ -2,17 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+//Class with methods that buttons call
 public class ButtonManager : MonoBehaviour {
-
-    // Use this for initialization
-    void Start() {
-
-    }
-
-    // Update is called once per frame
-    void Update() {
-
-    }
 
     public void retry() {
         GameManager.restart(false, false, true);
@@ -69,6 +60,7 @@ public class ButtonManager : MonoBehaviour {
 
     public void endGameOverPanelIn() {
         if(GameManager.gameOver) {
+            //If the ad counter is 4, show ad
             if(PlayerPrefs.GetInt("AdCounter") >= 4) {
                 PlayerPrefs.SetInt("AdCounter", 0);
                 GameManager.showAd();

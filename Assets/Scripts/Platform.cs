@@ -10,19 +10,20 @@ public class Platform : MonoBehaviour {
     Rigidbody2D rb;
     float sensitivity = 1.5F;
 
-    // Use this for initialization
     void Start() {
         rb = GetComponent<Rigidbody2D>();
-        GetComponent<SpriteRenderer>();
     }
 
-    // Update is called once per frame
     void Update() {
 
+        //Platform only moves when the game is not paused
         if(!GameManager.isPaused){
 
+            //If there is a finger on the screen move the platform to the x location
             if(Input.touchCount > 0) {
                 Vector2 touchPos = Input.GetTouch(0).position;
+
+                //Position is reversed when the red special ball is collected
                 if(isReversed) {
                     touchPos.x = Screen.width - Input.GetTouch(0).position.x;
                 }
@@ -44,14 +45,18 @@ public class Platform : MonoBehaviour {
         }
     }
 
+    //Expands platorm when the yellow special ball is collected
     public void expandPlatform() {
         setDrawMode(PlayerPrefs.GetInt("ActiveSkin"));
         GetComponent<Animation>().Play("PlatformGrow");
     }
+
+    //Shrings platorm when the yellow special ball expires
     public void shrinkPlatform() {
         GetComponent<Animation>().Play("PlatformShrink");
     }
 
+    //Sets the SpriteRenderer.drawMode attribute so that the platform looks better when it expands for certain skins
     public void setDrawMode(int activeSkin) {
         switch(activeSkin) {
             case 0:

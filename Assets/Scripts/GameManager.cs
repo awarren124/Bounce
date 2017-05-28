@@ -26,7 +26,7 @@ public class GameManager : MonoBehaviour {
     public static UIManager ui;
     public static bool gameOver = true;
     static bool readyToSpawn = true;
-    public enum GameMode { Lives, KeepUp, Blind };
+    public enum GameMode { Lives, Blind };
     public static GameMode gamemode = GameMode.Blind;
     public GameObject lostBallX;
     public GameObject titlePanel;
@@ -45,12 +45,13 @@ public class GameManager : MonoBehaviour {
     public GameObject camera;
     public GameObject otherButtons;
     public GameObject credits;
-    int i = 0;
-    //    public b
-    // Use this for initialization
-    void Start() {
+
+    void Start(){
+        //Loops background colors;
         camera.GetComponent<Animation>().Play();
 
+
+        //PlayerPrefs initialization
         if(!PlayerPrefs.HasKey("AdCounter"))
             PlayerPrefs.SetInt("AdCounter", 0);
 
@@ -71,7 +72,10 @@ public class GameManager : MonoBehaviour {
 
         PlayerPrefs.Save();
 
+        //Pass ui elements to new uimanager instance
         ui = new UIManager(scoreLabel, livesLabel, panel, lostBallX, titlePanel, pausePanel, pauseButton, timerPanel, starsLabel, shopPanel, tutorial, otherButtons, credits);
+
+        //Sets framerate to a *glorious* 60fps
         Application.targetFrameRate = 60;
 
         //Level setup
@@ -96,62 +100,69 @@ public class GameManager : MonoBehaviour {
         fallTrigger.transform.localScale = new Vector2(Camera.main.orthographicSize * 2 * Screen.width / Screen.height,
                                                        1);
 
+        //Tutorial
         if(PlayerPrefsX.GetBool("ShowTutorial")) {
             showTutorial();
         }
     }
 
-    // Update is called once per frame
     void FixedUpdate() {
 
+        //Updates stars label
         ui.updateStarsLabel();
+
+        //Game mechanics only execute when the game isn't running or is paused
         if(!gameOver && !isPaused) {
             if(updateUiSBTimer)
+                //Makes the specialball timer shrink
                 ui.updateSpecialBallTimer(Time.fixedDeltaTime);
+
             ballTimer += Time.fixedDeltaTime;
             levelTimer += Time.fixedDeltaTime;
+
+            //Game mechanics
             switch(gamemode) {
                 case GameMode.Lives:
+                    //Spawns specialballs at random
                     if(Random.Range(0.0F, 1.0F) > specialFreq && spawnSpecial) {
                         SpecialBall specialball = Instantiate(specialBall, ballDropPoint, Quaternion.identity);
                         spawnSpecial = false;
                     }
 
+                    //Spawns stars at random
                     if(Random.Range(0.0F, 1.0F) > starFreq) {
                         Star instStar = Instantiate(star, new Vector2(Random.Range(-3, 3), ballDropPoint.y), Quaternion.identity);
                         instStar.GetComponent<Rigidbody2D>().AddTorque(Random.Range(-5.0F, 5.0F));
                     }
 
+                    //Increases timer for when balls should fall (maximum is one ball every 0.23 seconds
                     if(levelTimer > 0.4) {
-                        level++;
                         if(ballTimerTrigger > 0.23) {
                             ballTimerTrigger -= 0.01f;
-                            //numOfBallsTrigger += 1;
                         }
                         levelTimer = 0;
                     }
 
-                    if(ballTimer > ballTimerTrigger) {//&& numOfBalls < numOfBallsTrigger) { //Every second if there are less than 3 balls
-
-                        //Make new ball
+                    //Spawns balls if it is time to
+                    if(ballTimer > ballTimerTrigger) {
                         Ball instantiatedBall = Instantiate(ball, ballDropPoint, Quaternion.identity);
+                        //Shrinks balls if the blue special ball is active
                         if(shrinkBall) {
                             instantiatedBall.GetComponent<Animation>().Play("BallShrink");
                         }
                         ballTimer = 0;
-
                         numOfBalls++;
                     }
 
                     if(lives < 0)
                         startGameOver();
                     break;
+
                 case GameMode.Blind:
                     if(levelTimer > 4) {
-                        level++;
+                        //Balls don't fall as fast in blind mode
                         if(ballTimerTrigger > 0.3) {
                             ballTimerTrigger -= 0.1f;
-                            //numOfBallsTrigger += 1;
                         }
                         levelTimer = 0;
                     }
@@ -161,17 +172,15 @@ public class GameManager : MonoBehaviour {
                         instStar.GetComponent<Rigidbody2D>().AddTorque(Random.Range(-25.0F, 25.0F));
                     }
 
-                    if(ballTimer > ballTimerTrigger) {//&& numOfBalls < numOfBallsTrigger) { //Every second if there are less than 3 balls
-
-                        //Make new ball
+                    if(ballTimer > ballTimerTrigger) {                        
                         Ball instantiatedBall = Instantiate(ball, ballDropPoint, Quaternion.identity);
                         ballTimer = 0;
 
                         numOfBalls++;
                     }
 
+                    //Fading balls in scene in and out
                     float fadeTime = 1.20F;
-
                     float lerp = Mathf.PingPong(Time.time, fadeTime);
                     float alpha = Mathf.Lerp(fadeTime, 0.0F, lerp);
                     foreach(GameObject ball in GameObject.FindGameObjectsWithTag("Ball")) {
@@ -189,6 +198,7 @@ public class GameManager : MonoBehaviour {
         }
     }
 
+    //Shrinks balls when blue special ball is collected
     public static void shrinkBalls() {
         GameObject[] balls = GameObject.FindGameObjectsWithTag("Ball");
         for(int i = 0; i < balls.Length; i++) {
@@ -197,6 +207,7 @@ public class GameManager : MonoBehaviour {
         shrinkBall = true;
     }
 
+    //Expands balls when blue special ball expires
     public static void expandBalls() {
         GameObject[] balls = GameObject.FindGameObjectsWithTag("Ball");
         for(int i = 0; i < balls.Length; i++) {
@@ -205,6 +216,7 @@ public class GameManager : MonoBehaviour {
         shrinkBall = false;
     }
 
+    //Called when a ball falls past the platform
     public static void lostBall(Vector3 pos) {
         numOfBalls--;
         lives -= 1;
@@ -216,6 +228,7 @@ public class GameManager : MonoBehaviour {
         }
     }
 
+    //Called when the player bounces a ball
     public static void bouncedBall() {
         score += 1;
         if(score == 25) {
@@ -225,10 +238,14 @@ public class GameManager : MonoBehaviour {
         ui.updateScore(score);
     }
 
+    //Gane over
     public void startGameOver() {
+        //Increases counter for showing ads
         PlayerPrefs.SetInt("AdCounter", PlayerPrefs.GetInt("AdCounter") + 1);
         gameOver = true;
         string stringGm = "";
+
+        //Set high score if applicables
         if(gamemode == GameMode.Lives) {
             stringGm = "LivesHighScore";
             if(score > PlayerPrefs.GetInt("LivesHighScore")) {
@@ -243,8 +260,11 @@ public class GameManager : MonoBehaviour {
             }
         }
 
+        //Revert time scale if it was changed
         Time.timeScale = 1.0F;
         Time.fixedDeltaTime = Time.timeScale * 0.02F;
+
+        //Make balls, special balls, and stars stop moving and stay in place
         GameObject[] balls = GameObject.FindGameObjectsWithTag("Ball");
         for(int i = 0; i < balls.Length; i++) {
             balls[i].GetComponent<Rigidbody2D>().bodyType = RigidbodyType2D.Kinematic;
@@ -272,9 +292,11 @@ public class GameManager : MonoBehaviour {
             }
         }
 
+        //Game over panel is shown with correct high score for game mode
         ui.showGameOverPanel(stringGm);
     }
 
+    //Restart game
     public static void restart(bool notMenu, bool isPauseMenu, bool actualRestart) {
         ui.restart(isPauseMenu, actualRestart);
         spawnSpecial = false;
@@ -311,7 +333,6 @@ public class GameManager : MonoBehaviour {
                 Destroy(star, star.GetComponent<Animation>()["StarGameOver"].length);
             }
         }
-        //GameObject.FindGameObjectWithTag("SpecialBall");
 
         score = 0;
         lives = 3;
@@ -322,6 +343,7 @@ public class GameManager : MonoBehaviour {
         gameOver = notMenu;
     }
 
+    //Starts game
     public static void startGame(GameMode gm) {
         ui.fadeOutTitle(true);
         ui.showPauseButton();
@@ -331,14 +353,18 @@ public class GameManager : MonoBehaviour {
         ui.updateScore(0);
     }
 
+    //Shows main menu
     public static void goToMenu(bool isPause) {
         ui.menuIn(isPause, true);
         restart(true, isPause, false);
     }
 
+    //Pauses game
     public static void pause() {
         ui.showPauseMenu();
         isPaused = true;
+
+        //Makes balls, special balls, and stars stop moving
         GameObject[] balls = GameObject.FindGameObjectsWithTag("Ball");
         ballVelocities = new Vector2[balls.Length];
         for(int i = 0; i < balls.Length; i++) {
@@ -364,16 +390,15 @@ public class GameManager : MonoBehaviour {
         }
     }
 
+    //Plays game if paused
     public static void play(bool isPauseRestart) {
         isPaused = false;
         updateUiSBTimer = false;
-        //if(ui.pauseInFrame)
-        //ui.hidePauseMenu(isPauseRestart);
         if(isPauseRestart) {
-            Debug.Log("play(" + isPauseRestart + ")");
             ui.showPauseButton();
         }
 
+        //Makes balls, special balls, and stars move again with their saved velocities
         GameObject[] balls = GameObject.FindGameObjectsWithTag("Ball");
         for(int i = 0; i < balls.Length; i++) {
             if(!isPauseRestart) {
@@ -397,27 +422,32 @@ public class GameManager : MonoBehaviour {
         }
     }
 
+    //Shows shop
     public static void showShop() {
         ui.fadeOutTitle(false);
         ui.showShop();
     }
 
+    //Shows tutorial
     public static void showTutorial() {
         ui.tutorialIn();
         PlayerPrefsX.SetBool("ShowTutorial", false);
     }
 
+    //Ends tutorial
     public static void tutorialEnd() {
         ui.tutorialOut();
 
     }
 
+    //Shows ad after game
     public static void showAd() {
         if(Advertisement.IsReady()) {
             Advertisement.Show();
         }
     }
 
+    //Shows ad for 20 stars
     public static void showRewardAd() {
         if(Advertisement.IsReady("rewardedVideo")) {
             var options = new ShowOptions { resultCallback = handleShowResult };
@@ -425,6 +455,7 @@ public class GameManager : MonoBehaviour {
         }
     }
 
+    //Handles the showRewardAd() result
     private static void handleShowResult(ShowResult result) {
         switch(result) {
             case ShowResult.Finished:
@@ -440,6 +471,7 @@ public class GameManager : MonoBehaviour {
         }
     }
 
+    //Opens app in respective app store for rating
     public static void rate() {
 #if UNITY_IPHONE
         Application.OpenURL("itms-apps://itunes.apple.com/app/idXXXXXXXX");
@@ -448,10 +480,12 @@ public class GameManager : MonoBehaviour {
 #endif
     }
 
+    //Shows credits
     public static void showCredits() {
         ui.showCredits();
     }
 
+    //Hides credits
     public static void hideCredits() {
         ui.hideCredits();
     }
