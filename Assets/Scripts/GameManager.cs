@@ -474,9 +474,9 @@ public class GameManager : MonoBehaviour {
     //Opens app in respective app store for rating
     public static void rate() {
 #if UNITY_IPHONE
-        Application.OpenURL("itms-apps://itunes.apple.com/app/idXXXXXXXX");
+        Application.OpenURL("itms-apps://itunes.apple.com/app/id1242567880");
 #elif UNITY_ANDROID
-        Application.OpenURL("market://details?id=XXXXXXXXX");
+        Application.OpenURL("market://details?id=com.AlexanderWarren.BounceFade");
 #endif
     }
 
